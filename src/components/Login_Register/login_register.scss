@@ -1,0 +1,110 @@
+// Globalne promenljive za boje
+$primary-color: #2a9d8f;   // smirujuća zelena
+$secondary-color: #264653; // tamno plava za kontrast
+$accent-color: #e9c46a;    // topla žuta za naglaske
+$error-color: #e63946;     // crvena za greške
+$success-color: #2ecc71;   // zelena za uspeh
+$background-color: #f4f4f4;
+
+.forma {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  h2 {
+    font-size: 1.4rem;
+    color: $secondary-color;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-section {
+    margin-bottom: 1.5rem;
+
+    input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+
+      &:focus {
+        border-color: $primary-color;
+        outline: none;
+        box-shadow: 0 0 6px rgba($primary-color, 0.3);
+      }
+    }
+  }
+
+  button {
+    width: 100%;
+    padding: 0.9rem;
+    background: $primary-color;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &:hover:enabled {
+      background: darken($primary-color, 10%);
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  // Feedback poruke
+  .feedback {
+    margin-top: 1rem;
+    font-weight: bold;
+
+    &.valid {
+      color: $success-color;
+    }
+
+    &.invalid {
+      color: $error-color;
+    }
+  }
+
+  // Lista grešaka
+  .error-list {
+    margin-top: 1rem;
+    color: $error-color;
+    font-weight: bold;
+
+    ul {
+      margin: 0.5rem 0 0 1rem;
+      padding: 0;
+      list-style: disc;
+    }
+  }
+}
+
+// Spinner za loading
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid $primary-color;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

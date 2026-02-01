@@ -1,0 +1,95 @@
+// Globalne boje i fontovi
+$primary-color: #2a9d8f;   // smirujuća zelena
+$secondary-color: #264653; // tamno plava
+$accent-color: #e9c46a;    // topla žuta
+$error-color: #e63946;
+$success-color: #2ecc71;
+$background-color: #f4f4f4;
+
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: $background-color;
+  margin: 0;
+  padding: 0;
+  color: $secondary-color;
+}
+
+.header {
+  background: #2a9d8f; // zelena
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h1 {
+    font-size: 1.4rem;
+    margin: 0;
+  }
+
+  .nav-list {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+
+    li {
+      a, .logout-btn {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #e9c46a; // žuta
+        }
+      }
+    }
+  }
+}
+
+
+// Glavni sadržaj
+main {
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+// Footer
+footer {
+  background: $secondary-color;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+
+  a {
+    color: $accent-color;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Utility klase
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
