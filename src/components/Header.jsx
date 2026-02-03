@@ -4,7 +4,7 @@ import { AuthContext } from "../AuthContext.jsx";
 import "../styles/app.scss";
 
 const Header = () => {
-  const { isAdmin,isAuthenticated, logout } = useContext(AuthContext);
+  const { isVet , isHelp,isAuthenticated, logout } = useContext(AuthContext);
 
   return (
     <header className="header"> 
@@ -13,6 +13,12 @@ const Header = () => {
         <ul className="nav-list">
           <li><Link to="/">Početna</Link></li>
 
+          {(isVet || isHelp) && (
+
+            <li><Link to="/patients">Pacijenti</Link></li>
+
+          )}
+          
           {!isAuthenticated ? (
             <>
               <li><Link to="/register">Register</Link></li>

@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isVet, setIsVet] = useState(false);
+  const [isHelp, setIsHelp] = useState(false);
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
 
@@ -20,9 +21,9 @@ export const AuthProvider = ({ children }) => {
         if (decoded.role && decoded.role.includes("Veterinar")) {
           setIsVet(true);
           setRole("Veterinar");
-        } else {
-          setIsVet(false);
-          setRole(decoded.role);
+        } else if (decoded.role && decoded.role.includes("Pomocnik")) {
+          setIsHelp(true);
+          setRole("Pomocnik");
         }
 
         console.log("Decoded user:", decoded);
@@ -43,8 +44,10 @@ export const AuthProvider = ({ children }) => {
     if (decoded.role && decoded.role.includes("Veterinar")) {
       setIsVet(true);
       setRole("Veterinar");
+    } else if (decoded.role && decoded.role.includes("Pomocnik")) {
+      setIsHelp(true);
+      setRole("Pomocnik");
     } else {
-      setIsVet(false);
       setRole(decoded.role);
     }
   };
@@ -53,13 +56,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setIsVet(false);
+    setIsHelp(false);
     setUser(null);
     setRole(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, role, isVet, login, logout }}
+      value={{ isAuthenticated, user, role, isVet, isHelp , login, logout }}
     >
       {children}
     </AuthContext.Provider>
