@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ContactHookForm from "./patientForm.jsx";
+import { AuthContext } from "../../AuthContext";
 import * as specieService from "../../services/species.services.jsx";
 import * as patientService from "../../services/patients.services.jsx";
+import * as userService from "../../services/user.services.jsx";
 
 
 export default function EditAnimalPage() {
   const { id } = useParams();
+  const {user} = useContext(AuthContext);
   const navigate = useNavigate();
   const [patientData, setPatientData] = useState(null);
   const [speciesData, setSpeciesData] = useState([]);
+  const [vetsData, setVetsData] = useState([]);
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -32,8 +36,18 @@ export default function EditAnimalPage() {
           console.error("Greška pri dobavljanju vrsta zivotinja:", err);
         }
       };
+
+    const fetchVets = async () => {
+        try {
+          const response = await userService.getAllVets();
+          setVetsData(response || []);
+          console.log("Učitani veterinari:", response);
+        } catch (err) {
+          console.error("Greška pri dobavljanju veterinara:", err);
+        }
+      };
    
-   
+      fetchVets();
       fetchPatient();
       fetchSpecies();
   }, [id]);
@@ -43,12 +57,13 @@ export default function EditAnimalPage() {
       await patientService.updatePatient(updatedAthlete)
       navigate("/patients");
     } catch (err) {
-      const serverMessage = err.response?.data?.message || "Greška na serveru.";
+      const serverMessage = err.response?.data || "Greška na serveru.";
       alert(`Izmena nije uspela: ${serverMessage}`);
+      navigate("/patients");
     }
   };
 
-  if (!athleteData) return <p>Učitavanje...</p>;
+  if (!patientData) return <p>Učitavanje...</p>;
 
   return (
     <div>
@@ -56,7 +71,9 @@ export default function EditAnimalPage() {
       <ContactHookForm
         initialData={patientData}
         species={speciesData}
-        onSubmitBook ={handleUpdate}
+        vets={vetsData}
+        user={user}
+        onSubmit ={handleUpdate}
         onCancel={() => navigate("/patients")}
       />
     </div>

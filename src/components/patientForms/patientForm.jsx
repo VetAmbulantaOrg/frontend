@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "../Login_Register/login_register.scss";
 
-function ContactHookForm({ species , initialData = {}, onSubmit, onCancel }) {
+function ContactHookForm({user , vets, species , initialData = {}, onSubmit, onCancel }) {
     const {
     register,
     handleSubmit,
@@ -10,14 +10,23 @@ function ContactHookForm({ species , initialData = {}, onSubmit, onCancel }) {
     reset,
     setValue,
   } = useForm();
-  
+
   useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0) {
-      setValue("name", initialData.name || "");
-      setValue("dateOfBirth", initialData.dateOfBirth || "");
-      setValue("species", initialData.species.id || "");
+    if (initialData && Object.keys(initialData).length > 0 && vets.length > 0) {
+      reset({
+        name: initialData.name || "",
+        dateOfBirth: initialData.dateOfBirth
+          ? new Date(initialData.dateOfBirth).toISOString().split("T")[0]
+          : "",
+        species: initialData.species?.id || "",
+        vet: initialData.vet?.id
+          ? Number(initialData.vet.id)                // ako pacijent ima veterinara
+          : (user?.role === "Veterinar" ? Number(user.Id) : null) // ako nema, setuj ulogovanog veterinara
+      });
     }
-  }, [initialData, setValue]);
+  }, [initialData, vets, reset, user]);
+  
+  
 
 
   const onSubmitPatient = (data) => {
@@ -25,6 +34,7 @@ function ContactHookForm({ species , initialData = {}, onSubmit, onCancel }) {
       id: initialData?.id,
       name: data.name,
       speciesId: data.species ? Number(data.species) : null,
+      vetId: data.vet ? Number(data.vet) : null,
       dateOfBirth: data.dateOfBirth,
       ownerUsername: data.owner,
     };
@@ -72,23 +82,21 @@ function ContactHookForm({ species , initialData = {}, onSubmit, onCancel }) {
         </div>
 
         <div className="form-section">
-            <label>
+        <label>
             Vrsta pacijenta:
-            <select
-                {...register("species")}
-                defaultValue={initialData?.species?.id ?? ""}
-            >
-                <option value="">-- Bez vrste --</option>
-                {species.map((specie) => (
+            <select {...register("species")}>
+            <option value="">-- Bez vrste --</option>
+            {species.map((specie) => (
                 <option key={specie.id} value={specie.id}>
-                    {specie.name}
+                {specie.name}
                 </option>
-                ))}
+            ))}
             </select>
-            </label>
+        </label>
         </div>
 
-        {initialData && (
+
+        {!initialData.id && (
             <div className="form-section">
             <label>
                 Korisničko ime vlasnika:
@@ -99,6 +107,22 @@ function ContactHookForm({ species , initialData = {}, onSubmit, onCancel }) {
                 })}
                 />
                 {errors.owner && <p className="error">{errors.owner.message}</p>}
+            </label>
+            </div>
+        )}
+
+        {initialData.id && (
+            <div className="form-section">
+            <label>
+                Izaberite vaseg veterinara:
+                <select {...register("vet")}>
+                <option value="">-- Bez veterinara --</option>
+                {vets.map((vet) => (
+                    <option key={vet.id} value={vet.id}>
+                    {vet.name} {" "} {vet.surname}
+                    </option>
+                ))}
+                </select>
             </label>
             </div>
         )}

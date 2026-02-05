@@ -41,10 +41,10 @@ const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
         <tbody>
           {currentPatients.map((patient) => (
             <tr key={patient.id}>
-              <td>{patient.petName}</td>
-              <td>{patient.animalType}</td>
-              <td>{patient.birthDate}</td>
-              <td>{patient.ownerUserName}</td>
+              <td>{patient.name}</td>
+              <td>{patient.species.name}</td>
+              <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
+              <td>{patient.owner.userName}</td>
               {(isVet || isHelp) && (
                 <>
                   <td>
