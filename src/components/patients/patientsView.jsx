@@ -29,7 +29,8 @@ const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
             <th>Ime ljubimca</th>
             <th>Vrsta životinje</th>
             <th>Datum rođenja</th>
-            <th>Vlasnik (korisničko ime)</th>
+            <th>Vlasnik</th>
+            <th>Odabrani Veterinar</th>
             {(isVet || isHelp) && (
               <>
                 <th>Izbriši</th>
@@ -44,7 +45,8 @@ const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
               <td>{patient.name}</td>
               <td>{patient.species.name}</td>
               <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
-              <td>{patient.owner.userName}</td>
+              <td>{patient.owner.name} {(patient.owner.surname)}</td>
+              <td>{patient.vet.name} {(patient.vet.surname)}</td>
               {(isVet || isHelp) && (
                 <>
                   <td>
