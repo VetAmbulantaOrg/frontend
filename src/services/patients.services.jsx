@@ -26,7 +26,7 @@ export async function deletePatient(id) {
   return response.data;
 }
 
-export async function searchPatients(searchParams) {
-  const response = await AxiosConfig.post('/Patient/search', searchParams);
+export async function searchPatients(searchParams , page = 1, pageSize = 5) {
+  const response = await AxiosConfig.post('/Patient/search', searchParams , page , pageSize);
   return response.data;
 }

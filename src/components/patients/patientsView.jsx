@@ -1,28 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../AuthContext.jsx";
 import "./patients.scss";
 
-const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
+const PatientsTable = ({ patients, page, pageSize, totalCount, onPageChange, onDelete }) => {
   const navigate = useNavigate();
   const { isVet, isHelp } = useContext(AuthContext);
 
-  // Paginacija state
-  const [currentPage, setCurrentPage] = useState(1);
-  const patientsPerPage = 5; // broj pacijenata po stranici
-
-  // Izračunaj indekse
-  const indexOfLastPatient = currentPage * patientsPerPage;
-  const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-  const currentPatients = patients.slice(indexOfFirstPatient, indexOfLastPatient);
-
-  const totalPages = Math.ceil(patients.length / patientsPerPage);
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
     <div className="patients-wrapper">
-        <button className="add-patient-button" onClick={() => navigate("/create-patient")}>
-          Dodaj novog pacijenta
-        </button>
+      <button className="add-patient-button" onClick={() => navigate("/create-patient")}>
+        Dodaj novog pacijenta
+      </button>
+
       <table className="patients-table">
         <thead>
           <tr>
@@ -40,21 +32,18 @@ const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
           </tr>
         </thead>
         <tbody>
-          {currentPatients.map((patient) => (
+          {patients.map((patient) => (
             <tr key={patient.id}>
               <td>{patient.name}</td>
               <td>{patient.species.name}</td>
               <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
-              <td>{patient.owner.name} {(patient.owner.surname)}</td>
-              <td>{patient.vet.name} {(patient.vet.surname)}</td>
+              <td>{patient.owner.name} {patient.owner.surname}</td>
+              <td>{patient.vet?.name} {patient.vet?.surname}</td>
               {(isVet || isHelp) && (
                 <>
                   <td>
                     <button
-                      onClick={() => {
-                        onDelete(patient.id);
-                        triggerRefresh();
-                      }}
+                      onClick={() => onDelete(patient.id)}
                     >
                       Izbriši
                     </button>
@@ -74,17 +63,17 @@ const PatientsTable = ({ patients, onDelete, triggerRefresh }) => {
       {/* Paginacija */}
       <div className="pagination">
         <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
+          onClick={() => onPageChange(page - 1)}
+          disabled={page === 1}
         >
           ← Prethodna
         </button>
         <span>
-          Stranica {currentPage} od {totalPages}
+          Stranica {page} od {totalPages}
         </span>
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(page + 1)}
+          disabled={page === totalPages}
         >
           Sledeća →
         </button>

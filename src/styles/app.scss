@@ -1,18 +1,5 @@
-// Globalne boje i fontovi
-$primary-color: #2a9d8f;   // smirujuća zelena
-$secondary-color: #264653; // tamno plava
-$accent-color: #e9c46a;    // topla žuta
-$error-color: #e63946;
-$success-color: #2ecc71;
-$background-color: #f4f4f4;
+@use "./variables.scss" as *;
 
-body {
-  font-family: "Segoe UI", Roboto, sans-serif;
-  background: $background-color;
-  margin: 0;
-  padding: 0;
-  color: $secondary-color;
-}
 
 .header {
   background: #2a9d8f; // zelena

@@ -1,31 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import PatientsTable from "./patientsView.jsx";
+import SearchBar from "./searchBar/searchBar.jsx";
 import * as patientService from "../../services/patients.services.jsx";
 
-
-export default function BooksPage() {
+export default function PatientsPage() {
     const [patients, setPatients] = useState([]);
     const [error, setError] = useState(null);
-    const [refresh, setRefresh] = useState(0);
 
-    useEffect(() => { 
-        patientService.getAllPatients()
-         .then(res => { 
-            setPatients(res || []); 
-            console.log("Učitani pacijenti:", res);
-        });
+    // Paginacija state
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(5);
+    const [totalCount, setTotalCount] = useState(0);
 
-    }, [refresh]);
-
-    const fetchPatients = async () => {
+    // Učitavanje pacijenata sa backend paginacijom
+    const fetchPatients = async (searchParams = {}) => {
         try {
-            const data = await patientService.getAllPatients()
-            setPatients(data);
+            const data = await patientService.searchPatients(searchParams, page, pageSize);
+            setPatients(data.items || []);
+            setTotalCount(data.totalCount || 0);
         } catch (error) {
             setError(`Greška pri učitavanju pacijenata: ${error}`);
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        fetchPatients();
+    }, [page]); // svaki put kad se promeni stranica, povuci nove podatke
 
     const deletePatients = async (id) => {
         try {
@@ -37,14 +38,24 @@ export default function BooksPage() {
         }
     };
 
-    return (    
+    return (
         <div>
+            <SearchBar 
+                onSearch={(res) => {
+                    setPatients(res.items || []);
+                    setTotalCount(res.totalCount || 0);
+                }} 
+                triggerRefresh={() => fetchPatients()}
+            />
             <h2>Svi Pacijenti</h2>
             {error && <p className="error">{error}</p>}
             <PatientsTable
-              patients={patients}
-              onDelete={deletePatients}
-              triggerRefresh={() => setRefresh(prev => prev + 1)}
+                patients={patients}
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={setPage}
+                onDelete={deletePatients}
             />
         </div>
     );

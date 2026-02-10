@@ -1,0 +1,116 @@
+@use "../../../styles/variables.scss" as *;
+
+.search-bar-wrapper {
+  margin-bottom: 1rem;
+
+  .toggle-search-button {
+    background: $primary-color;
+    color: #fff;
+    margin: 0.5%;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: darken($primary-color, 10%);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 4px rgba($primary-color, 0.4);
+    }
+  }
+}
+
+.patient-search-form {
+  background: $background-color;
+  border: 1px solid lighten($secondary-color, 20%);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  font-family: "Segoe UI", Arial, sans-serif;
+
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+
+    legend {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: $secondary-color;
+    }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+      color: $secondary-color;
+
+      input,
+      select {
+        margin-top: 0.4rem;
+        padding: 0.5rem;
+        border: 1px solid lighten($secondary-color, 30%);
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: border-color 0.2s ease;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
+          box-shadow: 0 0 4px rgba($primary-color, 0.4);
+        }
+      }
+    }
+  }
+
+  .form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:first-of-type {
+        background: $primary-color;
+        color: #fff;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+
+      &:last-of-type {
+        background: $accent-color;
+        color: $secondary-color;
+
+        &:hover {
+          background: darken($accent-color, 10%);
+        }
+      }
+    }
+  }
+
+  .error {
+    margin-top: 1rem;
+    color: $error-color;
+    font-weight: 600;
+  }
+}

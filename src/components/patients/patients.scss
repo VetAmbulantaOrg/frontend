@@ -1,4 +1,4 @@
-@import '../../styles/app.scss';
+@use '../../styles/variables.scss' as *;
 
 .patients-table {
     width: 100%;
@@ -76,7 +76,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 1rem;
+  margin: 1%;
   gap: 1rem;
 
   button {
