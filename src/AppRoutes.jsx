@@ -6,6 +6,7 @@ import PatientCreate from "./components/patientForms/patientFromCreate.jsx";
 import PatientEdit from "./components/patientForms/patientFromEdit.jsx";
 import LoginPage from "./components/Login_Register/LoginForm.jsx";
 import RegisterPage from "./components/Login_Register/RegisterForm.jsx";
+import AppointmentsPage from "./components/appointmentCalendar/AppointmentsPage.jsx";
 
 
 const AppRoutes = () => {
@@ -15,6 +16,7 @@ const AppRoutes = () => {
         <Route path="/patients" element={<PatientsTable />} />
         <Route path="/create-patient" element={<PatientCreate />} />
         <Route path="/edit-patient/:id" element={<PatientEdit />} />
+        <Route path="/appointments" element={<AppointmentsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Routes>

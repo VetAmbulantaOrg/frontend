@@ -6,6 +6,14 @@ export async function getAllPatients() {
   return response.data;
 }
 
+export async function getPatientsByVet(vetId) {
+  const response = await AxiosConfig.get(`/Patient/getByVet`, {
+    params: { vetId }
+  });
+  return response.data;
+}
+
+
 export async function getPatientsById(id) {
   const response = await AxiosConfig.get(`/Patient/${id}`);
   return response.data;

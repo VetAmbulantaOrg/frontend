@@ -10,11 +10,15 @@
   },
   "dependencies": {
     "axios": "^1.13.4",
+    "date-fns": "^4.1.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
+    "react-big-calendar": "^1.19.4",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.71.1",
-    "react-router-dom": "^7.13.0"
+    "react-modal": "^3.16.3",
+    "react-router-dom": "^7.13.0",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "sass-embedded": "^1.97.3",

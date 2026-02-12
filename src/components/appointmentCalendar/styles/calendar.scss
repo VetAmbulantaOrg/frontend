@@ -1,0 +1,33 @@
+@import '../../../styles/variables.scss';
+
+.rbc-calendar {
+  font-family: $font-stack;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 16px;          // unutrašnji razmak
+  margin-top: 1%;       // razmak od elemenata iznad
+}
+
+.rbc-toolbar {
+  margin-bottom: 20px;    // razmak između toolbar-a i kalendara
+}
+
+.rbc-event {
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  color: #fff;
+
+  &.Scheduled {
+    background-color: $primary-color;
+  }
+
+  &.Completed {
+    background-color: $success-color;
+  }
+
+  &.Cancelled {
+    background-color: $danger-color;
+  }
+}

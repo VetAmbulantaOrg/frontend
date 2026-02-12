@@ -14,9 +14,10 @@ const Header = () => {
           <li><Link to="/">Početna</Link></li>
 
           {(isVet || isHelp) && (
-
-            <li><Link to="/patients">Pacijenti</Link></li>
-
+            <>
+              <li><Link to="/patients">Pacijenti</Link></li>
+              <li><Link to="/appointments">Pregledi</Link></li>
+            </>
           )}
           
           {!isAuthenticated ? (
