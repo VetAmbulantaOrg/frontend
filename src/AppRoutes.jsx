@@ -45,7 +45,7 @@ const AppRoutes = () => {
       <Route
         path="/appointments"
         element={
-          <ProtectedRoute requiredRoles={["Pomocnik"]}>
+          <ProtectedRoute requiredRoles={["Veterinar", "Pomocnik"]}>
             <AppointmentsPage />
           </ProtectedRoute>
         }

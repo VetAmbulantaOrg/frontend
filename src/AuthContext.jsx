@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [isHelp, setIsHelp] = useState(false);
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");   // promenjeno na sessionStorage
@@ -33,6 +34,8 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem("token");   // takođe sessionStorage
       }
     }
+
+    setLoading(false);
   }, []);
 
   const login = (token) => {
@@ -63,7 +66,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, role, isVet, isHelp, login, logout }}
+      value={{ isAuthenticated, user, role, isVet, isHelp, loading , login, logout }}
     >
       {children}
     </AuthContext.Provider>

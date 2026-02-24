@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './styles/appointments.scss'
 import CalendarView from './CalendarView.jsx';
 import AppointmentDayModal from './modals/AppointmentDayModal.jsx';
@@ -6,8 +6,11 @@ import AppointmentDetailModal from './modals/AppointmentDetailModal.jsx';
 import CreateAppointmentModal from './modals/AppointmentCreationModal.jsx';
 import * as appointmentService from '../../services/appointment.service.jsx';
 import * as userService from '../../services/user.services.jsx';
+import { AuthContext } from '../../AuthContext.jsx';
 
 export default function AppointmentsPage() {
+  const { role, user } = useContext(AuthContext);
+
   const [events, setEvents] = useState([]);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -18,29 +21,35 @@ export default function AppointmentsPage() {
   const [vets , setVets] = useState([]);
   const [vetId, setVetId] = useState(null);
 
- useEffect(() => {
-    userService.getAllVets()
-    .then(res => res)
-    .then(data => {setVets(data);
-    if (data.length > 0) {
-    setVetId(data[0].id); // postavi prvog veterinara kao default
-    }}); 
-}, []);
+  // Ako je veterinar ulogovan, odmah postavi njegov ID
+  useEffect(() => {
+    if (role === "Veterinar" && user?.id) {
+      setVetId(user.id);
+    } else {
+      userService.getAllVets()
+        .then(res => res)
+        .then(data => {
+          setVets(data);
+          if (data.length > 0) {
+            setVetId(data[0].id); // default prvi veterinar
+          }
+        }); 
+    }
+  }, [role, user]);
 
-
-useEffect(() => {
+  useEffect(() => {
     if (!vetId) return; // ako nije izabran veterinar, ne šaljemo fetch
   
     appointmentService.getAppointmentsByMonth(vetId)
       .then(data => {
-        console.log('Dohvaćeni podaci o terminima:', data);
         const mappedEvents = data.flatMap(day =>
           day.appointments.map(app => ({
             id: app.id,
             title: `${app.patient.name} (${app.patient.species})`,
             start: new Date(app.startAt),
             end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
-            patient: app.patient
+            patient: app.patient,
+            status: app.status
           }))
         );
         setEvents(mappedEvents);
@@ -62,12 +71,8 @@ useEffect(() => {
 
   const handleCreateAppointment = async (appointment) => {
     try {
-      // kreiraj pregled
       await appointmentService.createAppointment(appointment);
-  
-      // osveži listu pregleda nakon kreiranja
       const data = await appointmentService.getAppointmentsByMonth(vetId);
-  
       const mappedEvents = data.flatMap(day =>
         day.appointments.map(app => ({
           id: app.id,
@@ -78,22 +83,17 @@ useEffect(() => {
           status: app.status
         }))
       );
-  
       setEvents(mappedEvents);
-  
-      // ako je sve prošlo u redu, vrati rezultat (možeš i samo true)
       return mappedEvents;
     } catch (error) {
-      // propagiraj grešku dalje da je modal može uhvatiti u catch bloku
       throw error;
     }
   };
   
-  
-  
-
   return (
     <>
+      {/* Dropdown se prikazuje samo ako nije Veterinar */}
+      {role !== "Veterinar" && (
       <div style={{ marginBottom: '20px' }}>
         <label>Veterinar: </label>
         <select value={vetId ?? ''} onChange={(e) => { 
@@ -106,12 +106,30 @@ useEffect(() => {
           ))}
         </select>
 
-        <button className = "addAppointment"style={{ marginLeft: '20px' }} onClick={() => setIsCreateModalOpen(true)}>
-          + Novi pregled
+        <button className="addAppointment" style={{ marginLeft: '20px' }} onClick={() => setIsCreateModalOpen(true)}>
+        + Novi pregled
         </button>
       </div>
+    )}
 
-  
+     {/* Ako je veterinar ulogovan, prikaži naslov i dugme jedno ispod drugog */}
+      {role === "Veterinar" && user && (
+        <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 style={{ marginBottom: '10px' }}>
+            Pregledi za veterinara {user.Name} {user.Surname}
+          </h2>
+
+          <button 
+            className="addAppointment" 
+            style={{ marginTop: '10px' }} 
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            + Novi pregled
+          </button>
+        </div>
+      )}
+
+
       {vetId && (
         <>
           <CalendarView
@@ -138,11 +156,8 @@ useEffect(() => {
             vetId={vetId}
             onCreate={handleCreateAppointment}
           />
-
-
         </>
       )}
     </>
   );
-  
 }

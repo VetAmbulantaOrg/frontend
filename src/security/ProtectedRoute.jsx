@@ -3,7 +3,11 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
 
 export default function ProtectedRoute({ children, requiredRole }) {
-  const { isAuthenticated, role } = useContext(AuthContext);
+  const { isAuthenticated, role,loading } = useContext(AuthContext);
+
+  if (loading) { 
+    return <div>Loading...</div>; 
+  }
 
   // Ako nije ulogovan → redirect na login
   if (!isAuthenticated) {

@@ -22,3 +22,8 @@ export async function createUser(userData) {
   const response = await AxiosConfig.post("/Auth/register", userData);
   return response;
 }
+
+export async function getCurrentUser() {
+  const response = await AxiosConfig.get("/Auth/profile");
+  return response.data;
+}
