@@ -4,17 +4,19 @@ import CalendarView from './CalendarView.jsx';
 import AppointmentDayModal from './modals/AppointmentDayModal.jsx';
 import AppointmentDetailModal from './modals/AppointmentDetailModal.jsx';
 import CreateAppointmentModal from './modals/AppointmentCreationModal.jsx';
+import CancelAppointmentModal from './modals/AppointmentCancelModal.jsx';
 import * as appointmentService from '../../services/appointment.service.jsx';
 import * as userService from '../../services/user.services.jsx';
 import { AuthContext } from '../../AuthContext.jsx';
 
 export default function AppointmentsPage() {
-  const { role, user } = useContext(AuthContext);
+  const { role, user, isVet } = useContext(AuthContext);
 
   const [events, setEvents] = useState([]);
   const [isDayModalOpen, setIsDayModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   
@@ -49,7 +51,8 @@ export default function AppointmentsPage() {
             start: new Date(app.startAt),
             end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
             patient: app.patient,
-            status: app.status
+            status: app.status,
+            cancellationReason: app.cancellationReason
           }))
         );
         setEvents(mappedEvents);
@@ -67,6 +70,11 @@ export default function AppointmentsPage() {
     setSelectedAppointment(appointment);
     setIsDayModalOpen(false);
     setIsDetailModalOpen(true);
+  };
+
+  const openCancelModal = () => {
+    setIsDetailModalOpen(false);
+    setIsCancelModalOpen(true);
   };
 
   const handleCreateAppointment = async (appointment) => {
@@ -89,6 +97,40 @@ export default function AppointmentsPage() {
       throw error;
     }
   };
+
+  const handleCancelAppointment = async (reason) => {
+    const cancellationData = {
+      AppointmentId: selectedAppointment.id,
+      VetId: vetId,
+      Reason: reason
+    };
+  
+    try {
+      await appointmentService.cancelAppointment(cancellationData);
+      setIsCancelModalOpen(false);
+  
+      // osveži listu pregleda
+      const data = await appointmentService.getAppointmentsByMonth(vetId);
+      const mappedEvents = data.flatMap(day =>
+        day.appointments.map(app => ({
+          id: app.id,
+          title: `${app.patient.name} (${app.patient.species})`,
+          start: new Date(app.startAt),
+          end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
+          patient: app.patient,
+          status: app.status,
+          isCancelled: app.isCancelled,
+          cancellationReason: app.cancellationReason
+        }))
+      );
+      setEvents(mappedEvents);
+    } catch (error) {
+      console.error("Greška pri otkazivanju pregleda:", error);
+    }
+  };
+
+
+  
   
   return (
     <>
@@ -136,7 +178,33 @@ export default function AppointmentsPage() {
             events={events}
             onDayClick={handleDayClick}
             onEventClick={handleSelectAppointment}
+            eventPropGetter={(event) => {
+              let backgroundColor = "#3174ad"; // default plava
+
+              switch (event.status) {
+                case "Scheduled":
+                  backgroundColor = "#28a745"; // zelena
+                  break;
+                case "Cancelled":
+                  backgroundColor = "#6c757d"; // siva
+                  break;
+                case "Completed":
+                  backgroundColor = "#007bff"; // plava
+                  break;
+              }
+
+              return {
+                style: {
+                  backgroundColor,
+                  color: "#fff",
+                  borderRadius: "4px",
+                  border: "none",
+                  padding: "2px 4px"
+                }
+              };
+            }}
           />
+
           <AppointmentDayModal
             isOpen={isDayModalOpen}
             onClose={() => setIsDayModalOpen(false)}
@@ -148,6 +216,8 @@ export default function AppointmentsPage() {
             isOpen={isDetailModalOpen}
             onClose={() => setIsDetailModalOpen(false)}
             appointment={selectedAppointment}
+            cancelAppointment={openCancelModal}
+            isVet={isVet}
           />
 
           <CreateAppointmentModal
@@ -156,6 +226,14 @@ export default function AppointmentsPage() {
             vetId={vetId}
             onCreate={handleCreateAppointment}
           />
+
+          <CancelAppointmentModal
+            isOpen={isCancelModalOpen} 
+            onClose={() => setIsCancelModalOpen(false)}
+            onConfirm={handleCancelAppointment}
+          />
+
+
         </>
       )}
     </>

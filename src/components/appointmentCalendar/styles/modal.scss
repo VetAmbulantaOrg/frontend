@@ -4,28 +4,33 @@
 
 // Overlay - tamna pozadina preko celog ekrana
 .ReactModal__Overlay {
-  position: fixed;       // mora da prekrije ceo ekran
+  position: fixed;       
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5) !important; // poluprovidna crna
-  z-index: 1000;         // veći od kalendara
+  background-color: rgba(0, 0, 0, 0.5) !important; 
+  z-index: 1000;         
+
+  display: flex;          /* ključ */
+  align-items: center;    /* vertikalno centriranje */
+  justify-content: center;/* horizontalno centriranje */
 }
 
 // Content - kutija modala
 .ReactModal__Content {
   position: relative;
-  margin: auto;
   background: #fff;
   border-radius: 8px;
   padding: 20px;
   max-width: 500px;
+  width: 100%;            /* zauzima širinu do max-width */
   max-height: 80vh;
-  overflow-y: auto;      // skrol ako ima puno pregleda
-  z-index: 1001;         // iznad overlay-a
+  overflow-y: auto;       
+  z-index: 1001;          
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
+
 
 // Lista pregleda u dnevnom modalu
 .appointment-list {
@@ -63,6 +68,32 @@
       color: #333;
     }
   }
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  
+    button {
+      margin-top: 15px;
+      padding: 8px 12px;
+      background-color: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #125a9c;
+      }
+    }
+  
+    .cancel {
+      background-color: #d9534f;
+      color: #fff;
+    }
+  }
+  
 
   button {
     margin-top: 15px;
@@ -130,4 +161,66 @@
     }
   }
 }
+
+
+.ReactModal__Overlay_cancel {
+  background-color: rgba(0, 0, 0, 0.5); /* poluprovidna pozadina */
+  display: flex;
+  align-items: center;   /* vertikalno centriranje */
+  justify-content: center; /* horizontalno centriranje */
+}
+
+.ReactModal__Content_cancel {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  outline: none;
+}
+
+.modal-body {
+  margin-bottom: 20px;
+
+  label {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;          /* zauzima celu širinu */
+    box-sizing: border-box;
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between; /* dugmad na krajevima */
+  margin-top: 20px;
+
+  button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .confirm {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .cancel {
+    background-color: #ccc;
+    color: #333;
+  }
+}
+
+
 
