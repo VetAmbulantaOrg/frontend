@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");   // promenjeno na sessionStorage
     console.log("Provera tokena u AuthProvider:", token);
     if (token) {
       try {
@@ -30,13 +30,13 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       } catch (err) {
         console.error("Nevalidan token:", err);
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");   // takođe sessionStorage
       }
     }
-  }, [localStorage.getItem("token")]);
+  }, []);
 
   const login = (token) => {
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);   // promenjeno na sessionStorage
     const decoded = jwtDecode(token);
     setUser(decoded);
     setIsAuthenticated(true);
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");   // promenjeno na sessionStorage
     setIsAuthenticated(false);
     setIsVet(false);
     setIsHelp(false);
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, role, isVet, isHelp , login, logout }}
+      value={{ isAuthenticated, user, role, isVet, isHelp, login, logout }}
     >
       {children}
     </AuthContext.Provider>

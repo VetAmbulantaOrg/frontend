@@ -60,26 +60,35 @@ useEffect(() => {
     setIsDetailModalOpen(true);
   };
 
-  const handleCreateAppointment = (appointment) => {
-    appointmentService.createAppointment(appointment)
-      .then(() => {
-        // osveži listu pregleda nakon kreiranja
-        return appointmentService.getAppointmentsByMonth(vetId)
-          .then(data => {
-            const mappedEvents = data.flatMap(day =>
-              day.appointments.map(app => ({
-                id: app.id,
-                title: `${app.patient.name} (${app.patient.species})`,
-                start: new Date(app.startAt),
-                end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
-                patient: app.patient,
-                status: app.status
-              }))
-            );
-            setEvents(mappedEvents);
-          });
-      });
+  const handleCreateAppointment = async (appointment) => {
+    try {
+      // kreiraj pregled
+      await appointmentService.createAppointment(appointment);
+  
+      // osveži listu pregleda nakon kreiranja
+      const data = await appointmentService.getAppointmentsByMonth(vetId);
+  
+      const mappedEvents = data.flatMap(day =>
+        day.appointments.map(app => ({
+          id: app.id,
+          title: `${app.patient.name} (${app.patient.species})`,
+          start: new Date(app.startAt),
+          end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
+          patient: app.patient,
+          status: app.status
+        }))
+      );
+  
+      setEvents(mappedEvents);
+  
+      // ako je sve prošlo u redu, vrati rezultat (možeš i samo true)
+      return mappedEvents;
+    } catch (error) {
+      // propagiraj grešku dalje da je modal može uhvatiti u catch bloku
+      throw error;
+    }
   };
+  
   
   
 
@@ -87,12 +96,16 @@ useEffect(() => {
     <>
       <div style={{ marginBottom: '20px' }}>
         <label>Veterinar: </label>
-          <select value={vetId || ''} onChange={(e) => setVetId(Number(e.target.value))}>
-            <option value="">-- Izaberi veterinara --</option>
-            {vets.map(v => (
-              <option key={v.id} value={v.id}>{v.name} {v.surname}</option>
-            ))}
-          </select>
+        <select value={vetId ?? ''} onChange={(e) => { 
+          const value = e.target.value;
+          setVetId(value ? Number(value) : null);
+        }}>
+          <option value="">-- Izaberi veterinara --</option>
+          {vets.map(v => (
+            <option key={v.id} value={v.id}>{v.name} {v.surname}</option>
+          ))}
+        </select>
+
         <button className = "addAppointment"style={{ marginLeft: '20px' }} onClick={() => setIsCreateModalOpen(true)}>
           + Novi pregled
         </button>

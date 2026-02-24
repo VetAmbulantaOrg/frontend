@@ -26,10 +26,10 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
       });
   }, [vetId]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedPatient) return;
-
+  
     const newAppointment = {
       vetId,
       patientId: selectedPatient.value,
@@ -37,11 +37,36 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
       durationMinutes: parseInt(durationMinutes, 10),
       status: 0 // Scheduled
     };
-
-    onCreate(newAppointment);
-    onClose();
+  
+    try {
+      const response = await onCreate(newAppointment); 
+      // axios vraća response.data ako je status 2xx
+      console.log('Kreirani pregled:', response);
+      alert("Pregled uspešno kreiran!");
+      onClose();
+    } catch (error) {
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data.message || "Došlo je do greške.";
+  
+        if (status === 400) {
+          alert("Neispravan zahtev: " + message);
+        } else if (status === 409) {
+          alert("Konflikt: " + message);
+        } else if (status === 500) {
+          alert("Greška na serveru: " + message);
+        } else {
+          alert(message);
+        }
+      } else {
+        alert("Greška u komunikaciji sa serverom.");
+      }
+    }
   };
-
+  
+  
+  
+ 
   return (
     <Modal
       isOpen={isOpen}
