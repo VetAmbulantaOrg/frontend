@@ -6,7 +6,10 @@ Modal.setAppElement('#root');
 
 export default function AppointmentDetailModal({ isOpen, onClose, appointment, isVet, cancelAppointment }) {
   if (!appointment) return null;
-  console.log("Detalji pregleda:", appointment);
+
+  const isFutureAppointment = new Date(appointment.start) > new Date();
+  const canCancel = isVet && appointment.status === "Scheduled" && isFutureAppointment;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -21,25 +24,25 @@ export default function AppointmentDetailModal({ isOpen, onClose, appointment, i
         <p><strong>Vrsta:</strong> {appointment.patient.species}</p>
         <p><strong>Starost:</strong> {appointment.patient.age} god.</p>
         <p><strong>Početak:</strong> {appointment.start.toLocaleString()}</p>
+
         {appointment.status === "Scheduled" && <p><strong>Status:</strong> Zakazano</p>}
         {appointment.status === "Cancelled" && (
           <div>
             <p><strong>Status:</strong> Otkazano</p>
-            <p><strong>Razlog otkazivanja</strong> : {appointment.cancellationReason}</p>
+            <p><strong>Razlog otkazivanja:</strong> {appointment.cancellationReason}</p>
           </div>
         )}
         {appointment.status === "Completed" && <p><strong>Status:</strong> Završeno</p>}
 
         <div className="modal-actions">
           <button onClick={onClose}>Zatvori</button>
-          {isVet && appointment.status === "Scheduled" && (
-          <button className="cancel" onClick={cancelAppointment}>
-            Otkaži
-          </button>
+          {canCancel && (
+            <button className="cancel" onClick={cancelAppointment}>
+              Otkaži
+            </button>
           )}
         </div>
       </div>
-
     </Modal>
   );
 }

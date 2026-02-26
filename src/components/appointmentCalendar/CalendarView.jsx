@@ -15,7 +15,7 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-export default function CalendarView({ events, onDayClick, onEventClick }) {
+export default function CalendarView({ events, onDayClick, onEventClick, onNavigate }) {
   // Dodaj eventPropGetter da dodeli CSS klasu po statusu
   const eventPropGetter = (event) => {
     return {
@@ -34,6 +34,7 @@ export default function CalendarView({ events, onDayClick, onEventClick }) {
       selectable
       onSelectSlot={(slotInfo) => onDayClick(slotInfo.start)}
       onSelectEvent={(event) => onEventClick(event)}
+      onNavigate={(date) => onNavigate(date)}
       eventPropGetter={eventPropGetter}
     />
   );

@@ -47,7 +47,7 @@ export default function PatientsPage() {
                 }} 
                 triggerRefresh={() => fetchPatients()}
             />
-            <h2>Svi Pacijenti</h2>
+            <h2 style={{ marginLeft: '2%'}}>Svi Pacijenti</h2>
             {error && <p className="error">{error}</p>}
             <PatientsTable
                 patients={patients}

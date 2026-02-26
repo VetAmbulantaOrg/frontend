@@ -1,7 +1,7 @@
 import AxiosConfig from "./AxiosConfig.js";
 
-export async function getAppointmentsByMonth(vetId) {
-    const response = await AxiosConfig.get(`/Appointments/vet/${vetId}/monthly/`);
+export async function getAppointmentsByMonth(fetchData) {
+    const response = await AxiosConfig.post(`/Appointments/vet/${fetchData.vetId}/monthly/` , fetchData);
     return response.data;
 }
 

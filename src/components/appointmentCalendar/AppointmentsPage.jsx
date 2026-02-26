@@ -19,6 +19,8 @@ export default function AppointmentsPage() {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
+
   
   const [vets , setVets] = useState([]);
   const [vetId, setVetId] = useState(null);
@@ -40,9 +42,18 @@ export default function AppointmentsPage() {
   }, [role, user]);
 
   useEffect(() => {
-    if (!vetId) return; // ako nije izabran veterinar, ne šaljemo fetch
+    if (!vetId) return;
   
-    appointmentService.getAppointmentsByMonth(vetId)
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+
+    const fetchData = {
+      vetId,
+      year,
+      month
+    }
+  
+    appointmentService.getAppointmentsByMonth(fetchData)
       .then(data => {
         const mappedEvents = data.flatMap(day =>
           day.appointments.map(app => ({
@@ -57,7 +68,8 @@ export default function AppointmentsPage() {
         );
         setEvents(mappedEvents);
       });
-  }, [vetId]);
+  }, [vetId, currentDate]);
+  
   
 
   const handleDayClick = (date) => {
@@ -178,6 +190,7 @@ export default function AppointmentsPage() {
             events={events}
             onDayClick={handleDayClick}
             onEventClick={handleSelectAppointment}
+            onNavigate={(date) => setCurrentDate(date)}
             eventPropGetter={(event) => {
               let backgroundColor = "#3174ad"; // default plava
 

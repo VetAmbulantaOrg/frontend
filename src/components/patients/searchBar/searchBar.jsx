@@ -53,13 +53,16 @@ export default function SearchBar({ onSearch, triggerRefresh }) {
 
     return (
         <div className="search-bar-wrapper">
-            <button 
-            type="button" 
-            onClick={() => setIsVisible(prev => !prev)} 
-            className="toggle-search-button"
-            >
-            {isVisible ? "-" : "+"}
-            </button>
+            <div className="search-bar-header">
+                <button 
+                type="button" 
+                onClick={() => setIsVisible(prev => !prev)} 
+                className="toggle-search-button"
+                >
+                {isVisible ? "-" : "+"}
+                </button>
+                <h3 className="search-title">Pretraga pacijenata</h3>
+            </div>
 
             {isVisible && (
             <form onSubmit={handleSearch} className="patient-search-form">
