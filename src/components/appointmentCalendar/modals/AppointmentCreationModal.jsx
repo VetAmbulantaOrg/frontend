@@ -75,6 +75,13 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
       className="ReactModal__Content"
       overlayClassName="ReactModal__Overlay"
     >
+
+      {/* Dugme X u gornjem desnom uglu */}
+      <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+
+        
       <h2>Kreiraj novi pregled</h2>
       <form onSubmit={handleSubmit} className="appointment-form">
         <label>
@@ -97,7 +104,6 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
         </label>
         <div className="form-actions">
           <button type="submit">Sačuvaj</button>
-          <button type="button" onClick={onClose}>Otkaži</button>
         </div>
       </form>
     </Modal>

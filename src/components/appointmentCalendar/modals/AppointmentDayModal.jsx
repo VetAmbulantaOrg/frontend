@@ -13,6 +13,12 @@ export default function AppointmentDayModal({ isOpen, onClose, appointments, onS
       className="ReactModal__Content"
       overlayClassName="ReactModal__Overlay"
     >
+
+      {/* Dugme X u gornjem desnom uglu */}
+      <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+
       <h2>Pregledi za dan</h2>
       {appointments.length === 0 ? (
         <p>Nema pregleda.</p>
@@ -27,7 +33,6 @@ export default function AppointmentDayModal({ isOpen, onClose, appointments, onS
           ))}
         </ul>
       )}
-      <button onClick={onClose}>Zatvori</button>
     </Modal>
   );
 }

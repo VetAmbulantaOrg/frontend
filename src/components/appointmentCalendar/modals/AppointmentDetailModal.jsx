@@ -1,14 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
+import SubmitReportModal from './AppointmentReportModal.jsx'; // import modala za izveštaj
 import '../styles/modal.scss';
 
 Modal.setAppElement('#root');
 
 export default function AppointmentDetailModal({ isOpen, onClose, appointment, isVet, cancelAppointment }) {
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
   if (!appointment) return null;
 
   const isFutureAppointment = new Date(appointment.start) > new Date();
   const canCancel = isVet && appointment.status === "Scheduled" && isFutureAppointment;
+
+  // pregled je prošao ako je start < sada i status je Scheduled
+  const canSubmitReport = isVet && appointment.status === "Scheduled" && new Date(appointment.start) < new Date();
+
+  const canUpdateReport = isVet && appointment.status === "Completed" && 
+  new Date() <= new Date(appointment.end).setDate(new Date(appointment.end).getDate() + 3);
+
+  console.log("Detalji pregleda:", appointment);
 
   return (
     <Modal
@@ -18,6 +29,8 @@ export default function AppointmentDetailModal({ isOpen, onClose, appointment, i
       className="ReactModal__Content"
       overlayClassName="ReactModal__Overlay"
     >
+      <button className="close-button" onClick={onClose}>×</button>
+
       <h2>Detalji pregleda</h2>
       <div className="appointment-detail">
         <p><strong>Pacijent:</strong> {appointment.patient.name}</p>
@@ -35,14 +48,33 @@ export default function AppointmentDetailModal({ isOpen, onClose, appointment, i
         {appointment.status === "Completed" && <p><strong>Status:</strong> Završeno</p>}
 
         <div className="modal-actions">
-          <button onClick={onClose}>Zatvori</button>
           {canCancel && (
             <button className="cancel" onClick={cancelAppointment}>
               Otkaži
             </button>
           )}
+
+          {canSubmitReport && (
+            <button className="submit-report" onClick={() => setIsReportModalOpen(true)}>
+              Podnesi izveštaj
+            </button>
+          )}
+
+          {canUpdateReport && (
+            <button className="submit-report" onClick={() => setIsReportModalOpen(true)}>
+              Izmeni izveštaj
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Ugnježdeni modal za podnošenje izveštaja */}
+      <SubmitReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        appointment={appointment}
+        vetId={appointment.vetId}
+      />
     </Modal>
   );
 }

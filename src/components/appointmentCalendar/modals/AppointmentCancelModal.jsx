@@ -15,6 +15,13 @@ export default function CancelAppointmentModal({ isOpen, onClose, onConfirm }) {
       className="ReactModal__Content_cancel"
       overlayClassName="ReactModal__Overlay_cancel"
     >
+
+      {/* Dugme X u gornjem desnom uglu */}
+      <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+
+        
       <h2>Otkaži pregled</h2>
       <div className="modal-body">
         <label>
@@ -29,7 +36,6 @@ export default function CancelAppointmentModal({ isOpen, onClose, onConfirm }) {
       </div>
 
       <div className="modal-actions">
-        <button onClick={onClose}>Odustani</button>
         <button className="confirm" onClick={() => onConfirm(reason)}>Potvrdi</button>
       </div>
     </Modal>

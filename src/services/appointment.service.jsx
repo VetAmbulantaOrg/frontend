@@ -14,3 +14,13 @@ export async function cancelAppointment(cancellationData) {
 const reponse = await AxiosConfig.put(`/Appointments/${cancellationData.appointmentId}/cancel/`, cancellationData );
 return reponse.data;
 }
+
+export async function submitReport(reportData) {
+    const response = await AxiosConfig.post("/Appointments/report", reportData);
+    return response.data;
+}
+
+export async function updateReport(reportData) {
+    const response = await AxiosConfig.put(`/Appointments/report/update/`, reportData);
+    return response.data;
+}

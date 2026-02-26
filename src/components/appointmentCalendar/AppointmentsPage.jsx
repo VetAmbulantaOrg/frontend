@@ -5,6 +5,7 @@ import AppointmentDayModal from './modals/AppointmentDayModal.jsx';
 import AppointmentDetailModal from './modals/AppointmentDetailModal.jsx';
 import CreateAppointmentModal from './modals/AppointmentCreationModal.jsx';
 import CancelAppointmentModal from './modals/AppointmentCancelModal.jsx';
+import SubmitReportModal from './modals/AppointmentReportModal.jsx';
 import * as appointmentService from '../../services/appointment.service.jsx';
 import * as userService from '../../services/user.services.jsx';
 import { AuthContext } from '../../AuthContext.jsx';
@@ -17,6 +18,7 @@ export default function AppointmentsPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -63,6 +65,7 @@ export default function AppointmentsPage() {
             end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
             patient: app.patient,
             status: app.status,
+            report: app.report,
             cancellationReason: app.cancellationReason
           }))
         );
@@ -92,23 +95,13 @@ export default function AppointmentsPage() {
   const handleCreateAppointment = async (appointment) => {
     try {
       await appointmentService.createAppointment(appointment);
-      const data = await appointmentService.getAppointmentsByMonth(vetId);
-      const mappedEvents = data.flatMap(day =>
-        day.appointments.map(app => ({
-          id: app.id,
-          title: `${app.patient.name} (${app.patient.species})`,
-          start: new Date(app.startAt),
-          end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
-          patient: app.patient,
-          status: app.status
-        }))
-      );
-      setEvents(mappedEvents);
-      return mappedEvents;
+      window.location.reload();
     } catch (error) {
+      console.error("Greška pri kreiranju pregleda:", error);
       throw error;
     }
   };
+  
 
   const handleCancelAppointment = async (reason) => {
     const cancellationData = {
@@ -131,6 +124,7 @@ export default function AppointmentsPage() {
           end: new Date(new Date(app.startAt).getTime() + app.durationMinutes * 60000),
           patient: app.patient,
           status: app.status,
+          report: app.report,
           isCancelled: app.isCancelled,
           cancellationReason: app.cancellationReason
         }))
@@ -246,6 +240,12 @@ export default function AppointmentsPage() {
             onConfirm={handleCancelAppointment}
           />
 
+          <SubmitReportModal
+            isOpen={isReportModalOpen}
+            onClose={() => setIsReportModalOpen(false)}
+            appointment={selectedAppointment}
+            vetId={vetId}
+          />
 
         </>
       )}
