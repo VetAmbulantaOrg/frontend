@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
         } else if (decoded.role && decoded.role.includes("Pomocnik")) {
           setIsHelp(true);
           setRole("Pomocnik");
+        } else {
+          setRole(decoded.role);
         }
 
         console.log("Decoded user:", decoded);

@@ -18,7 +18,7 @@ const AppRoutes = () => {
       <Route
         path="/patients"
         element={
-          <ProtectedRoute requiredRoles={["Veterinar", "Pomocnik"]}>
+          <ProtectedRoute requiredRole={["Veterinar", "Pomocnik"]}>
             <PatientsTable />
           </ProtectedRoute>
         }
@@ -27,7 +27,7 @@ const AppRoutes = () => {
       <Route
         path="/create-patient"
         element={
-          <ProtectedRoute requiredRoles={["Veterinar", "Pomocnik"]}>
+          <ProtectedRoute requiredRole={["Veterinar", "Pomocnik"]}>
             <PatientCreate />
           </ProtectedRoute>
         }
@@ -36,7 +36,7 @@ const AppRoutes = () => {
       <Route
         path="/edit-patient/:id"
         element={
-          <ProtectedRoute requiredRoles={["Veterinar", "Pomocnik"]}>
+          <ProtectedRoute requiredRole={["Veterinar", "Pomocnik"]}>
             <PatientEdit />
           </ProtectedRoute>
         }
@@ -45,7 +45,7 @@ const AppRoutes = () => {
       <Route
         path="/appointments"
         element={
-          <ProtectedRoute requiredRoles={["Veterinar", "Pomocnik"]}>
+          <ProtectedRoute requiredRole={["Veterinar", "Pomocnik"]}>
             <AppointmentsPage />
           </ProtectedRoute>
         }

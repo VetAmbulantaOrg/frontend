@@ -15,9 +15,10 @@ export default function ProtectedRoute({ children, requiredRole }) {
   }
 
   // Ako je ulogovan ali nema potrebnu rolu → redirect na "unauthorized"
-  if (requiredRole && role !== requiredRole) {
-    return <Navigate to="/unauthorized" replace />;
-  }
+  if (requiredRole && !requiredRole.includes(role)) 
+    { 
+      return <Navigate to="/unauthorized" replace />; 
+    }
 
   // Ako je sve ok → renderuj decu (traženu rutu)
   return children;
