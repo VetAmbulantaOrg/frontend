@@ -6,18 +6,27 @@ import { useNavigate } from "react-router-dom";
 const RegisterForm = () => {
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+    confirmPassword: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+  });
+
   const [feedback, setFeedback] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   useEffect(() => {
+    const { username, password, confirmPassword, email, firstName, lastName } = formData;
     const valid =
       username.trim().length > 2 &&
       password.length >= 8 &&
@@ -32,13 +41,14 @@ const RegisterForm = () => {
         ? "Podaci su validni. Možete nastaviti."
         : "Molimo vas da ispravno popunite sva polja."
     );
-  }, [username, password, confirmPassword, email, firstName, lastName]);
+  }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors([]);
     setLoading(true);
 
+    const { username, password, email, firstName, lastName } = formData;
     const payload = {
       userName: username,
       password,
@@ -53,22 +63,28 @@ const RegisterForm = () => {
       navigate("/login");
     } catch (error) {
       const backendErrors = error?.response?.data;
-      if (Array.isArray(backendErrors)) {
-        const messages = backendErrors.map(
-          (err) =>
-            err.description ||
-            err.message ||
-            "Greška u registraciji."
-        );
-        setErrors(messages);
-      } else {
-        setErrors([error.message || "Došlo je do greške."]);
-      }
+      const messages = Array.isArray(backendErrors)
+        ? backendErrors.map(
+            (err) => err.description || err.message || "Greška u registraciji."
+          )
+        : [error.message || "Došlo je do greške."];
+      setErrors(messages);
       console.error("Register error:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const renderInput = (type, name, placeholder) => (
+    <input
+      type={type}
+      name={name}
+      placeholder={placeholder}
+      value={formData[name]}
+      onChange={handleInputChange}
+      required
+    />
+  );
 
   if (loading) return <div id="loadingSpinner" className="spinner"></div>;
 
@@ -76,52 +92,16 @@ const RegisterForm = () => {
     <form className="forma" onSubmit={handleSubmit}>
       <section className="form-section">
         <h2>👤 Lični podaci</h2>
-        <input
-          type="text"
-          placeholder="Korisničko ime"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email adresa"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Ime"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Prezime"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          required
-        />
+        {renderInput("text", "username", "Korisničko ime")}
+        {renderInput("email", "email", "Email adresa")}
+        {renderInput("text", "firstName", "Ime")}
+        {renderInput("text", "lastName", "Prezime")}
       </section>
 
       <section className="form-section">
         <h2>🔒 Bezbednost</h2>
-        <input
-          type="password"
-          placeholder="Lozinka"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Potvrdi lozinku"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+        {renderInput("password", "password", "Lozinka")}
+        {renderInput("password", "confirmPassword", "Potvrdi lozinku")}
       </section>
 
       <section className="form-section">

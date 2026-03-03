@@ -2,142 +2,106 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "../Login_Register/login_register.scss";
 
-function ContactHookForm({user , vets, species , initialData = {}, onSubmit, onCancel }) {
+function ContactHookForm({ user, vets, species, initialData = {}, onSubmit, onCancel }) {
     const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm();
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+    } = useForm();
 
-  useEffect(() => {
-    if (initialData && Object.keys(initialData).length > 0 && vets.length > 0) {
-      reset({
-        name: initialData.name || "",
-        dateOfBirth: initialData.dateOfBirth
-          ? new Date(initialData.dateOfBirth).toISOString().split("T")[0]
-          : "",
-        species: initialData.species?.id || "",
-        vet: initialData.vet?.id
-          ? Number(initialData.vet.id)                // ako pacijent ima veterinara
-          : (user?.role === "Veterinar" ? Number(user.Id) : null) // ako nema, setuj ulogovanog veterinara
-      });
-    }
-  }, [initialData, vets, reset, user]);
-  
-  
+    useEffect(() => {
+        if (initialData && Object.keys(initialData).length > 0 && vets.length > 0) {
+            reset({
+                name: initialData.name || "",
+                dateOfBirth: initialData.dateOfBirth
+                    ? new Date(initialData.dateOfBirth).toISOString().split("T")[0]
+                    : "",
+                species: initialData.species?.id || "",
+                vet: initialData.vet?.id
+                    ? Number(initialData.vet.id)
+                    : user?.role === "Veterinar"
+                    ? Number(user.Id)
+                    : null,
+            });
+        }
+    }, [initialData, vets, reset, user]);
 
+    const onSubmitPatient = (data) => {
+        const patient = {
+            id: initialData?.id,
+            name: data.name,
+            speciesId: data.species ? Number(data.species) : null,
+            vetId: data.vet ? Number(data.vet) : null,
+            dateOfBirth: data.dateOfBirth,
+            ownerUsername: data.owner,
+        };
 
-  const onSubmitPatient = (data) => {
-    const patient = {
-      id: initialData?.id,
-      name: data.name,
-      speciesId: data.species ? Number(data.species) : null,
-      vetId: data.vet ? Number(data.vet) : null,
-      dateOfBirth: data.dateOfBirth,
-      ownerUsername: data.owner,
+        console.log("Podaci iz forme:", patient);
+        onSubmit(patient);
+        reset();
     };
 
-    console.log("Podaci iz forme:", patient);
-    onSubmit(patient);
-    reset();
-  };
-  
-
-  return (
-    <form className="forma" onSubmit={handleSubmit(onSubmitPatient)}>
-        <h2>{initialData?.id ? "Izmena pacijenta" : "Dodaj pacijenta"}</h2>
-
+    const renderInputField = (label, name, type, validation, additionalProps = {}) => (
         <div className="form-section">
             <label>
-            Ime:
-            <input
-                type="text"
-                {...register("name", {
-                required: "Obavezno je uneti ime pacijenta!",
-                })}
-            />
-            {errors.name && <p className="error">{errors.name.message}</p>}
+                {label}
+                <input type={type} {...register(name, validation)} {...additionalProps} />
+                {errors[name] && <p className="error">{errors[name].message}</p>}
             </label>
         </div>
+    );
 
+    const renderSelectField = (label, name, options, additionalProps = {}) => (
         <div className="form-section">
             <label>
-            Datum rođenja:
-            <input
-                type="date"
-                {...register("dateOfBirth", {
-                required: "Obavezno je uneti datum rođenja!",
-                setValueAs: (value) => {
-                    if (!value) return null;
-                    return new Date(value).toISOString();
-                },
-                })}
-            />
-            {errors.dateOfBirth && (
-                <p className="error">{errors.dateOfBirth.message}</p>
-            )}
-            </label>
-        </div>
-
-        <div className="form-section">
-        <label>
-            Vrsta pacijenta:
-            <select {...register("species")}>
-            <option value="">-- Bez vrste --</option>
-            {species.map((specie) => (
-                <option key={specie.id} value={specie.id}>
-                {specie.name}
-                </option>
-            ))}
-            </select>
-        </label>
-        </div>
-
-
-        {!initialData.id && (
-            <div className="form-section">
-            <label>
-                Korisničko ime vlasnika:
-                <input
-                type="text"
-                {...register("owner", {
-                    required: "Obavezno je uneti korisničko ime vlasnika!",
-                })}
-                />
-                {errors.owner && <p className="error">{errors.owner.message}</p>}
-            </label>
-            </div>
-        )}
-
-        {initialData.id && (
-            <div className="form-section">
-            <label>
-                Izaberite vaseg veterinara:
-                <select {...register("vet")}>
-                <option value="">-- Bez veterinara --</option>
-                {vets.map((vet) => (
-                    <option key={vet.id} value={vet.id}>
-                    {vet.name} {" "} {vet.surname}
-                    </option>
-                ))}
+                {label}
+                <select {...register(name)} {...additionalProps}>
+                    <option value="">-- Bez opcije --</option>
+                    {options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                            {option.name || `${option.name} ${option.surname}`}
+                        </option>
+                    ))}
                 </select>
             </label>
-            </div>
-        )}
+        </div>
+    );
 
-        <button type="submit">
-            {initialData?.id ? "Sačuvaj izmene" : "Dodaj pacijenta"}
-        </button>
+    return (
+        <form className="forma" onSubmit={handleSubmit(onSubmitPatient)}>
+            <h2>{initialData?.id ? "Izmena pacijenta" : "Dodaj pacijenta"}</h2>
 
-        {initialData?.id && (
-            <button type="button" onClick={onCancel}>
-            Otkaži
+            {renderInputField("Ime:", "name", "text", {
+                required: "Obavezno je uneti ime pacijenta!",
+            })}
+
+            {renderInputField("Datum rođenja:", "dateOfBirth", "date", {
+                required: "Obavezno je uneti datum rođenja!",
+                setValueAs: (value) => (value ? new Date(value).toISOString() : null),
+            })}
+
+            {renderSelectField("Vrsta pacijenta:", "species", species)}
+
+            {!initialData.id &&
+                renderInputField("Korisničko ime vlasnika:", "owner", "text", {
+                    required: "Obavezno je uneti korisničko ime vlasnika!",
+                })}
+
+            {initialData.id &&
+                renderSelectField("Izaberite vašeg veterinara:", "vet", vets)}
+
+            <button type="submit">
+                {initialData?.id ? "Sačuvaj izmene" : "Dodaj pacijenta"}
             </button>
-        )}
-    </form>
-  );
+
+            {initialData?.id && (
+                <button type="button" onClick={onCancel}>
+                    Otkaži
+                </button>
+            )}
+        </form>
+    );
 }
 
 export default ContactHookForm;

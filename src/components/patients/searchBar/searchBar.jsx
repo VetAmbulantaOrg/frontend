@@ -4,15 +4,16 @@ import * as patientService from "../../../services/patients.services.jsx";
 import "./searchBar.scss";
 
 export default function SearchBar({ onSearch, triggerRefresh }) {
-    const [fullNameVet, setFullNameVet] = useState("");
-    const [petName, setPetName] = useState("");
-    const [species, setSpecies] = useState("");
+    const [filters, setFilters] = useState({
+        fullNameVet: "",
+        petName: "",
+        species: "",
+        minAge: "",
+        maxAge: "",
+        sortType: "NameAsc",
+    });
     const [speciesList, setSpeciesList] = useState([]);
-    const [minAge, setMinAge] = useState("");
-    const [maxAge, setMaxAge] = useState("");
-    const [sortType, setSortType] = useState("NameAsc");
     const [isVisible, setIsVisible] = useState(true);
-
 
     useEffect(() => {
         speciesService.getAllSpecies()
@@ -20,105 +21,127 @@ export default function SearchBar({ onSearch, triggerRefresh }) {
             .catch(err => console.error("Greška pri učitavanju vrsta:", err));
     }, []);
 
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prev) => ({ ...prev, [name]: value }));
+    };
+
     const handleSearch = async (e) => {
         e.preventDefault();
 
         const payload = {
-            FullNameVet: fullNameVet || null,
-            PetName: petName || null,
-            Species: species || null,
-            MinAge: minAge ? parseInt(minAge) : null,
-            MaxAge: maxAge ? parseInt(maxAge) : null,
-            SortType: sortType || "NameAsc"
+            FullNameVet: filters.fullNameVet || null,
+            PetName: filters.petName || null,
+            Species: filters.species || null,
+            MinAge: filters.minAge ? parseInt(filters.minAge) : null,
+            MaxAge: filters.maxAge ? parseInt(filters.maxAge) : null,
+            SortType: filters.sortType || "NameAsc",
         };
 
         try {
-            // resetujemo na prvu stranicu sa default pageSize = 5
             const result = await patientService.searchPatients(payload, 1, 5);
-            onSearch(result); // prosleđuje PagedResult (Items + TotalCount)
+            onSearch(result);
         } catch (err) {
             console.error("Greška pri pretrazi:", err);
         }
     };
 
     const resetFilters = () => {
-        setFullNameVet("");
-        setPetName("");
-        setSpecies("");
-        setMinAge("");
-        setMaxAge("");
-        setSortType("NameAsc");
-        triggerRefresh(); // osvežava listu pacijenata
+        setFilters({
+            fullNameVet: "",
+            petName: "",
+            species: "",
+            minAge: "",
+            maxAge: "",
+            sortType: "NameAsc",
+        });
+        triggerRefresh();
     };
 
     return (
         <div className="search-bar-wrapper">
             <div className="search-bar-header">
-                <button 
-                type="button" 
-                onClick={() => setIsVisible(prev => !prev)} 
-                className="toggle-search-button"
+                <button
+                    type="button"
+                    onClick={() => setIsVisible((prev) => !prev)}
+                    className="toggle-search-button"
                 >
-                {isVisible ? "-" : "+"}
+                    {isVisible ? "-" : "+"}
                 </button>
                 <h3 className="search-title">Pretraga pacijenata</h3>
             </div>
 
             {isVisible && (
-            <form onSubmit={handleSearch} className="patient-search-form">
-                <fieldset>
-                    <legend>Filteri</legend>
-                    <div className="form-grid">
-                        <label>
-                            Veterinar (ime i prezime):
-                            <input type="text" value={fullNameVet} onChange={e => setFullNameVet(e.target.value)} />
-                        </label>
+                <form onSubmit={handleSearch} className="patient-search-form">
+                    <fieldset>
+                        <legend>Filteri</legend>
+                        <div className="form-grid">
+                            {renderInput("Veterinar (ime i prezime):", "fullNameVet", filters.fullNameVet, handleInputChange)}
+                            {renderInput("Ime pacijenta:", "petName", filters.petName, handleInputChange)}
+                            {renderSelect("Vrsta:", "species", filters.species, speciesList, handleInputChange)}
+                            {renderInput("Minimalne godine:", "minAge", filters.minAge, handleInputChange, "number")}
+                            {renderInput("Maksimalne godine:", "maxAge", filters.maxAge, handleInputChange, "number")}
+                            {renderSortSelect("Sortiraj po:", "sortType", filters.sortType, handleInputChange)}
+                        </div>
+                    </fieldset>
 
-                        <label>
-                            Ime pacijenta:
-                            <input type="text" value={petName} onChange={e => setPetName(e.target.value)} />
-                        </label>
-
-                        <label>
-                            Vrsta:
-                            <select value={species} onChange={e => setSpecies(e.target.value)}>
-                                <option value="">-- Izaberi vrstu --</option>
-                                {speciesList.map(s => <option key={s.id} value={s.name}>{s.name}</option>)}
-                            </select>
-                        </label>
-
-                        <label>
-                            Minimalne godine:
-                            <input type="number" value={minAge} onChange={e => setMinAge(e.target.value)} />
-                        </label>
-
-                        <label>
-                            Maksimalne godine:
-                            <input type="number" value={maxAge} onChange={e => setMaxAge(e.target.value)} />
-                        </label>
-
-                        <label>
-                            Sortiraj po:
-                            <select value={sortType} onChange={e => setSortType(e.target.value)}>
-                                <option value="NameAsc">Ime pacijenta (A-Z)</option>
-                                <option value="NameDesc">Ime pacijenta (Z-A)</option>
-                                <option value="SpeciesAsc">Vrsta (A-Z)</option>
-                                <option value="SpeciesDesc">Vrsta (Z-A)</option>
-                                <option value="VetAsc">Veterinar (A-Z)</option>
-                                <option value="VetDesc">Veterinar (Z-A)</option>
-                                <option value="AgeAsc">Godine (rastuce)</option>
-                                <option value="AgeDesc">Godine (opadajuce)</option>
-                            </select>
-                        </label>
+                    <div className="form-actions">
+                        <button type="submit">Pretraži</button>
+                        <button type="button" onClick={resetFilters}>Resetuj</button>
                     </div>
-                </fieldset>
-
-                <div className="form-actions">
-                    <button type="submit">Pretraži</button>
-                    <button type="button" onClick={resetFilters}>Resetuj</button>
-                </div>
-            </form>
+                </form>
             )}
         </div>
+    );
+}
+
+function renderInput(label, name, value, onChange, type = "text") {
+    return (
+        <label>
+            {label}
+            <input type={type} name={name} value={value} onChange={onChange} />
+        </label>
+    );
+}
+
+function renderSelect(label, name, value, options, onChange) {
+    return (
+        <label>
+            {label}
+            <select name={name} value={value} onChange={onChange}>
+                <option value="">-- Izaberi vrstu --</option>
+                {options.map((option) => (
+                    <option key={option.id} value={option.name}>
+                        {option.name}
+                    </option>
+                ))}
+            </select>
+        </label>
+    );
+}
+
+function renderSortSelect(label, name, value, onChange) {
+    const sortOptions = [
+        { value: "NameAsc", label: "Ime pacijenta (A-Z)" },
+        { value: "NameDesc", label: "Ime pacijenta (Z-A)" },
+        { value: "SpeciesAsc", label: "Vrsta (A-Z)" },
+        { value: "SpeciesDesc", label: "Vrsta (Z-A)" },
+        { value: "VetAsc", label: "Veterinar (A-Z)" },
+        { value: "VetDesc", label: "Veterinar (Z-A)" },
+        { value: "AgeAsc", label: "Godine (rastuce)" },
+        { value: "AgeDesc", label: "Godine (opadajuce)" },
+    ];
+
+    return (
+        <label>
+            {label}
+            <select name={name} value={value} onChange={onChange}>
+                {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                ))}
+            </select>
+        </label>
     );
 }

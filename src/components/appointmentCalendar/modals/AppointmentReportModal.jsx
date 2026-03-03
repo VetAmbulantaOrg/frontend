@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { AuthContext } from '../../../AuthContext.jsx';
-import { useContext } from 'react';
-import * as appointmentService from '../../../services/appointment.service.jsx';
+import React, { useState, useEffect, useContext } from 'react';
 import Modal from 'react-modal';
+import { AuthContext } from '../../../AuthContext.jsx';
+import * as appointmentService from '../../../services/appointment.service.jsx';
 import '../styles/modal.scss';
 
 Modal.setAppElement('#root');
 
-export default function SubmitReportModal({ isOpen, onClose, appointment, vetId }) {
-  const [weight, setWeight] = useState('');
-  const [anamnesis, setAnamnesis] = useState('');
+export default function SubmitReportModal({ isOpen, onClose, appointment }) {
+  const [formData, setFormData] = useState({ weight: '', anamnesis: '' });
   const { user } = useContext(AuthContext);
 
-  // Popunjavanje forme ako je reč o izmeni izveštaja
   useEffect(() => {
     if (appointment?.report) {
-      setWeight(appointment.report.weight || '');
-      setAnamnesis(appointment.report.anamnesis || '');
+      setFormData({
+        weight: appointment.report.weight || '',
+        anamnesis: appointment.report.anamnesis || '',
+      });
     }
   }, [appointment]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async () => {
     const report = {
       appointmentId: appointment.id,
-      weight: parseFloat(weight),
-      anamnesis: anamnesis,
+      weight: parseFloat(formData.weight),
+      anamnesis: formData.anamnesis,
       vetId: user.Id,
     };
 
     try {
       if (appointment?.report) {
-        // Ako izveštaj već postoji, poziva se updateReport
         await appointmentService.updateReport(report);
       } else {
-        // Ako izveštaj ne postoji, poziva se submitReport
         await appointmentService.submitReport(report);
       }
       window.location.reload();
-      onClose(); // zatvara modal
+      onClose();
     } catch (error) {
-      console.error('Greška pri podnošenju ili izmeni izveštaja:', error);
-      alert('Došlo je do greške pri podnošenju ili izmeni izveštaja.');
+      console.error('Error submitting or updating report:', error);
+      alert('An error occurred while submitting or updating the report.');
     }
   };
 
@@ -48,39 +50,41 @@ export default function SubmitReportModal({ isOpen, onClose, appointment, vetId 
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
-      contentLabel="Podnošenje izveštaja"
+      contentLabel="Submit Report"
       className="ReactModal__Content"
       overlayClassName="ReactModal__Overlay"
     >
       <button className="close-button" onClick={onClose}>×</button>
-      <h2>{appointment?.report ? 'Izmeni izveštaj' : 'Podnesi izveštaj'}</h2>
+      <h2>{appointment?.report ? 'Edit Report' : 'Submit Report'}</h2>
 
       <div className="report-form">
         <div className="form-group">
-          <label>Kilaža ljubimca (kg):</label>
+          <label>Pet Weight (kg):</label>
           <input
             type="number"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
+            name="weight"
+            value={formData.weight}
+            onChange={handleChange}
             min="0"
             step="0.1"
           />
         </div>
 
         <div className="form-group">
-          <label>Anamneza:</label>
+          <label>Anamnesis:</label>
           <textarea
-            value={anamnesis}
-            onChange={(e) => setAnamnesis(e.target.value)}
+            name="anamnesis"
+            value={formData.anamnesis}
+            onChange={handleChange}
             rows="5"
           />
         </div>
 
         <div className="modal-actions">
           <button onClick={handleSubmit} className="submit">
-            {appointment?.report ? 'Izmeni' : 'Podnesi'}
+            {appointment?.report ? 'Edit' : 'Submit'}
           </button>
-          <button onClick={onClose} className="cancel">Otkaži</button>
+          <button onClick={onClose} className="cancel">Cancel</button>
         </div>
       </div>
     </Modal>

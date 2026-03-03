@@ -12,61 +12,70 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
   const [startAt, setStartAt] = useState('');
   const [durationMinutes, setDurationMinutes] = useState(30);
 
-  // Učitaj pacijente samo za izabranog veterinara
   useEffect(() => {
     if (!vetId) return;
-    patientService.getPatientsByVet(vetId)
-      .then(data => {
-        console.log('Dohvaćeni pacijenti:', data);
-        const options = data.map(p => ({
+
+    const fetchPatients = async () => {
+      try {
+        const data = await patientService.getPatientsByVet(vetId);
+        const options = data.map((p) => ({
           value: p.id,
-          label: `${p.name} (${p.species.name}, ${p.owner.name} ${p.owner.surname})`
+          label: `${p.name} (${p.species.name}, ${p.owner.name} ${p.owner.surname})`,
         }));
         setPatients(options);
-      });
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+
+    fetchPatients();
   }, [vetId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedPatient) return;
-  
+
     const newAppointment = {
       vetId,
       patientId: selectedPatient.value,
-      startAt: new Date(startAt).toISOString(), // ISO 8601 format
+      startAt: new Date(startAt).toISOString(),
       durationMinutes: parseInt(durationMinutes, 10),
-      status: 0 // Scheduled
+      status: 0, // Scheduled
     };
-  
+
     try {
-      const response = await onCreate(newAppointment); 
-      // axios vraća response.data ako je status 2xx
-      console.log('Kreirani pregled:', response);
-      alert("Pregled uspešno kreiran!");
+      const response = await onCreate(newAppointment);
+      console.log('Appointment created:', response);
+      alert('Pregled uspešno kreiran!');
       onClose();
     } catch (error) {
-      if (error.response) {
-        const status = error.response.status;
-        const message = error.response.data.message || "Došlo je do greške.";
-  
-        if (status === 400) {
-          alert("Neispravan zahtev: " + message);
-        } else if (status === 409) {
-          alert("Konflikt: " + message);
-        } else if (status === 500) {
-          alert("Greška na serveru: " + message);
-        } else {
-          alert(message);
-        }
-      } else {
-        alert("Greška u komunikaciji sa serverom.");
-      }
+      handleError(error);
     }
   };
-  
-  
-  
- 
+
+  const handleError = (error) => {
+    if (error.response) {
+      const { status, data } = error.response;
+      const message = data.message || 'Došlo je do greške.';
+
+      switch (status) {
+        case 400:
+          alert(`Neispravan zahtev: ${message}`);
+          break;
+        case 409:
+          alert(`Konflikt: ${message}`);
+          break;
+        case 500:
+          alert(`Greška na serveru: ${message}`);
+          break;
+        default:
+          alert(message);
+      }
+    } else {
+      alert('Greška u komunikaciji sa serverom.');
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -75,17 +84,12 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
       className="ReactModal__Content"
       overlayClassName="ReactModal__Overlay"
     >
-
-      {/* Dugme X u gornjem desnom uglu */}
       <button className="close-button" onClick={onClose}>
-          ×
-        </button>
-
-        
+        ×
+      </button>
       <h2>Kreiraj novi pregled</h2>
       <form onSubmit={handleSubmit} className="appointment-form">
-        <label>
-          Pacijent:
+        <FormField label="Pacijent:">
           <Select
             options={patients}
             value={selectedPatient}
@@ -93,19 +97,36 @@ export default function CreateAppointmentModal({ isOpen, onClose, vetId, onCreat
             placeholder="Pretraži pacijente..."
             isSearchable
           />
-        </label>
-        <label>
-          Početak pregleda:
-          <input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} required />
-        </label>
-        <label>
-          Trajanje (min):
-          <input type="number" value={durationMinutes} onChange={(e) => setDurationMinutes(e.target.value)} required />
-        </label>
+        </FormField>
+        <FormField label="Početak pregleda:">
+          <input
+            type="datetime-local"
+            value={startAt}
+            onChange={(e) => setStartAt(e.target.value)}
+            required
+          />
+        </FormField>
+        <FormField label="Trajanje (min):">
+          <input
+            type="number"
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(e.target.value)}
+            required
+          />
+        </FormField>
         <div className="form-actions">
           <button type="submit">Sačuvaj</button>
         </div>
       </form>
     </Modal>
+  );
+}
+
+function FormField({ label, children }) {
+  return (
+    <label>
+      {label}
+      {children}
+    </label>
   );
 }

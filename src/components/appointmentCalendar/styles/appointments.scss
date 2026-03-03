@@ -1,39 +1,37 @@
 @import '../../../styles/variables.scss';
 
 select {
-    margin-top: 1%;
-    margin-left: 2%;
-    padding: 0.5rem;
-    border: 1px solid lighten($secondary-color, 30%);
-    border-radius: 4px;
-    font-size: 0.9rem;
-    transition: border-color 0.2s ease;
+  margin: 1% 0 0 2%;
+  padding: 0.5rem;
+  border: 1px solid lighten($secondary-color, 30%);
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
 
-    &:focus {
-      border-color: $primary-color;
-      outline: none;
-      box-shadow: 0 0 4px rgba($primary-color, 0.4);
-    }
+  &:focus {
+    border-color: $primary-color;
+    outline: none;
+    box-shadow: 0 0 4px rgba($primary-color, 0.4);
+  }
 }
 
-label { 
-  display: block; 
-  margin-top: 1%; 
-  font-size: 0.9rem; 
-  color: #333; 
-  margin-left: 2%;
+label {
+  display: block;
+  margin: 1% 0 0 2%;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .addAppointment {
-margin-top: 15px; 
-padding: 8px 12px; 
-background-color: $primary-color; 
-color: #fff; border: none; 
-border-radius: 4px; 
-cursor: pointer; 
+  margin-top: 15px;
+  padding: 8px 12px;
+  background-color: $primary-color;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 
-  &:hover { 
-    background-color: darken($primary-color, 10%); 
+  &:hover {
+    background-color: darken($primary-color, 10%);
   }
-
 }

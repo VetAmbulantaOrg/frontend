@@ -12,54 +12,56 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");   // promenjeno na sessionStorage
-    console.log("Provera tokena u AuthProvider:", token);
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUser(decoded);
 
-        if (decoded.role && decoded.role.includes("Veterinar")) {
-          setIsVet(true);
-          setRole("Veterinar");
-        } else if (decoded.role && decoded.role.includes("Pomocnik")) {
-          setIsHelp(true);
-          setRole("Pomocnik");
-        } else {
-          setRole(decoded.role);
-        }
+  const decodeAndSetUser = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+      setUser(decoded);
+      setIsAuthenticated(true);
 
-        console.log("Decoded user:", decoded);
-        setIsAuthenticated(true);
-      } catch (err) {
-        console.error("Nevalidan token:", err);
-        sessionStorage.removeItem("token");   // takođe sessionStorage
+      if (decoded.role?.includes("Veterinar")) {
+        setIsVet(true);
+        setRole("Veterinar");
+      } else if (decoded.role?.includes("Pomocnik")) {
+        setIsHelp(true);
+        setRole("Pomocnik");
+      } else {
+        setRole(decoded.role ?? null);
       }
-    }
 
-    setLoading(false);
-  }, []);
-
-  const login = (token) => {
-    sessionStorage.setItem("token", token);   // promenjeno na sessionStorage
-    const decoded = jwtDecode(token);
-    setUser(decoded);
-    setIsAuthenticated(true);
-
-    if (decoded.role && decoded.role.includes("Veterinar")) {
-      setIsVet(true);
-      setRole("Veterinar");
-    } else if (decoded.role && decoded.role.includes("Pomocnik")) {
-      setIsHelp(true);
-      setRole("Pomocnik");
-    } else {
-      setRole(decoded.role);
+      console.log("Decoded user:", decoded);
+    } catch (err) {
+      console.error("Nevalidan token:", err);
+      sessionStorage.removeItem("token");
     }
   };
 
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      decodeAndSetUser(token);
+    }
+    setLoading(false);
+  }, []);
+
+  // Navigacija na osnovu role – reaguje kad se role promeni
+  useEffect(() => {
+    if (isAuthenticated && role) {
+      if (role === "Veterinar") {
+        navigate("/appointments");
+      } else if (role === "Pomocnik") {
+        navigate("/patients");
+      }
+    }
+  }, [isAuthenticated, role, navigate]);
+
+  const login = (token) => {
+    sessionStorage.setItem("token", token);
+    decodeAndSetUser(token);
+  };
+
   const logout = () => {
-    sessionStorage.removeItem("token");   // promenjeno na sessionStorage
+    sessionStorage.removeItem("token");
     setIsAuthenticated(false);
     setIsVet(false);
     setIsHelp(false);
@@ -69,7 +71,16 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, role, isVet, isHelp, loading , login, logout }}
+      value={{
+        isAuthenticated,
+        user,
+        role,
+        isVet,
+        isHelp,
+        loading,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

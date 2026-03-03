@@ -6,15 +6,14 @@ import * as authService from "../../services/auth.services.jsx";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
+
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [feedback, setFeedback] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { login } = useContext(AuthContext);
-
- 
+  const { username, password } = formData;
 
   useEffect(() => {
     const valid = username.trim().length > 2 && password.length >= 8;
@@ -26,12 +25,17 @@ const LoginForm = () => {
     );
   }, [username, password]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const myToken = await authService.login({username, password});
+      const myToken = await authService.login({ username, password });
       sessionStorage.setItem("token", myToken);
       login(myToken);
       alert(`Dobrodošao, ${username}!`);
@@ -53,7 +57,7 @@ const LoginForm = () => {
           name="username"
           placeholder="Korisničko ime"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleChange}
           required
         />
         <input
@@ -61,17 +65,16 @@ const LoginForm = () => {
           name="password"
           placeholder="Lozinka"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleChange}
           required
         />
       </section>
 
       <section className="form-section">
-        <button type="submit" disabled={!isValid}>
-          Prijavi se
+        <button type="submit" disabled={!isValid || loading}>
+          {loading ? "Prijavljivanje..." : "Prijavi se"}
         </button>
       </section>
-
 
       <div
         id="form-feedback"

@@ -1,38 +1,35 @@
 @import '../../../styles/variables.scss';
 
-// styles/modal.scss
-
-// Overlay - tamna pozadina preko celog ekrana
+// Overlay - dark background over the entire screen
 .ReactModal__Overlay {
-  position: fixed;       
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5) !important; 
-  z-index: 1000;         
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 1000;
 
-  display: flex;          /* ključ */
-  align-items: center;    /* vertikalno centriranje */
-  justify-content: center;/* horizontalno centriranje */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-// Content - kutija modala
+// Content - modal box
 .ReactModal__Content {
   position: relative;
   background: #fff;
   border-radius: 8px;
   padding: 20px;
   max-width: 500px;
-  width: 100%;            /* zauzima širinu do max-width */
+  width: 100%;
   max-height: 80vh;
-  overflow-y: auto;       
-  z-index: 1001;          
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  overflow-y: auto;
+  z-index: 1001;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-
-// Lista pregleda u dnevnom modalu
+// Appointment list in daily modal
 .appointment-list {
   list-style: none;
   padding: 0;
@@ -58,7 +55,7 @@
   }
 }
 
-// Detalji pregleda u detail modalu
+// Appointment details in detail modal
 .appointment-detail {
   p {
     margin: 6px 0;
@@ -73,7 +70,7 @@
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
-  
+
     button {
       margin-top: 15px;
       padding: 8px 12px;
@@ -82,35 +79,20 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-  
+
       &:hover {
         background-color: #125a9c;
       }
     }
-  
+
     .cancel {
       background-color: #d9534f;
       color: #fff;
     }
   }
-  
-
-  button {
-    margin-top: 15px;
-    padding: 8px 12px;
-    background-color: #1976d2;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #125a9c;
-    }
-  }
 }
 
-//Forma za kreiranje pregleda
+// Form for creating appointments
 .appointment-form {
   display: flex;
   flex-direction: column;
@@ -153,6 +135,7 @@
   }
 }
 
+// Modal body
 .modal-body {
   margin-bottom: 20px;
 
@@ -166,14 +149,15 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%;          /* zauzima celu širinu */
+    width: 100%;
     box-sizing: border-box;
   }
 }
 
+// Modal actions
 .modal-actions {
   display: flex;
-  justify-content: space-between; /* dugmad na krajevima */
+  justify-content: space-between;
   margin-top: 20px;
 
   button {
@@ -195,7 +179,7 @@
   }
 }
 
-
+// Close button
 .close-button {
   position: absolute;
   top: 10px;
@@ -212,6 +196,7 @@
   }
 }
 
+// Report form
 .report-form {
   display: flex;
   flex-direction: column;
@@ -281,7 +266,3 @@
     }
   }
 }
-
-
-
-

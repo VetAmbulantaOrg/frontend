@@ -4,59 +4,63 @@ import SearchBar from "./searchBar/searchBar.jsx";
 import * as patientService from "../../services/patients.services.jsx";
 
 export default function PatientsPage() {
-    const [patients, setPatients] = useState([]);
-    const [error, setError] = useState(null);
+  const [patients, setPatients] = useState([]);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
+  const [totalCount, setTotalCount] = useState(0);
 
-    // Paginacija state
-    const [page, setPage] = useState(1);
-    const [pageSize] = useState(5);
-    const [totalCount, setTotalCount] = useState(0);
+  // Centralizovana funkcija za dohvat pacijenata
+  const fetchPatients = async (searchParams = {}) => {
+    try {
+      const data = await patientService.searchPatients(searchParams, page, pageSize);
+      setPatients(data.items ?? []);
+      setTotalCount(data.totalCount ?? 0);
+      setError(null);
+    } catch (err) {
+      console.error(err);
+      setError(`Greška pri učitavanju pacijenata: ${err.message || err}`);
+    }
+  };
 
-    // Učitavanje pacijenata sa backend paginacijom
-    const fetchPatients = async (searchParams = {}) => {
-        try {
-            const data = await patientService.searchPatients(searchParams, page, pageSize);
-            setPatients(data.items || []);
-            setTotalCount(data.totalCount || 0);
-        } catch (error) {
-            setError(`Greška pri učitavanju pacijenata: ${error}`);
-            console.error(error);
-        }
-    };
+  // Učitavanje pacijenata kada se promeni stranica
+  useEffect(() => {
+    fetchPatients();
+  }, [page]);
 
-    useEffect(() => {
-        fetchPatients();
-    }, [page]); // svaki put kad se promeni stranica, povuci nove podatke
+  // Brisanje pacijenta
+  const deletePatient = async (id) => {
+    try {
+      await patientService.deletePatient(id);
+      fetchPatients();
+    } catch (err) {
+      console.error(err);
+      setError(`Greška pri brisanju pacijenta: ${err.message || err}`);
+    }
+  };
 
-    const deletePatients = async (id) => {
-        try {
-            await patientService.deletePatient(id);
-            fetchPatients();
-        } catch (error) {
-            setError(`Greška pri brisanju pacijenta: ${error}`);
-            console.error(error);
-        }
-    };
+  // Rukovanje pretragom
+  const handleSearch = (res) => {
+    setPatients(res.items ?? []);
+    setTotalCount(res.totalCount ?? 0);
+  };
 
-    return (
-        <div>
-            <SearchBar 
-                onSearch={(res) => {
-                    setPatients(res.items || []);
-                    setTotalCount(res.totalCount || 0);
-                }} 
-                triggerRefresh={() => fetchPatients()}
-            />
-            <h2 style={{ marginLeft: '2%'}}>Svi Pacijenti</h2>
-            {error && <p className="error">{error}</p>}
-            <PatientsTable
-                patients={patients}
-                page={page}
-                pageSize={pageSize}
-                totalCount={totalCount}
-                onPageChange={setPage}
-                onDelete={deletePatients}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <SearchBar 
+        onSearch={handleSearch}
+        triggerRefresh={fetchPatients}
+      />
+      <h2 style={{ marginLeft: "2%" }}>Svi Pacijenti</h2>
+      {error && <p className="error">{error}</p>}
+      <PatientsTable
+        patients={patients}
+        page={page}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        onPageChange={setPage}
+        onDelete={deletePatient}
+      />
+    </div>
+  );
 }

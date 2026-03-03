@@ -1,18 +1,18 @@
-// Globalne promenljive za boje
-$primary-color: #2a9d8f;   // smirujuća zelena
-$secondary-color: #264653; // tamno plava za kontrast
-$accent-color: #e9c46a;    // topla žuta za naglaske
-$error-color: #e63946;     // crvena za greške
-$success-color: #2ecc71;   // zelena za uspeh
-$background-color: #f4f4f4;
+@use '../../styles/variables.scss' as *;
 
+// Mixin for reusable transitions
+@mixin transition($property, $duration: 0.3s, $ease: ease) {
+  transition: #{$property} #{$duration} #{$ease};
+}
+
+// Form Styles
 .forma {
   max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   h2 {
     font-size: 1.4rem;
@@ -26,14 +26,15 @@ $background-color: #f4f4f4;
   .form-section {
     margin-bottom: 1.5rem;
 
-    input , select {
+    input,
+    select {
       width: 100%;
       padding: 0.75rem;
       margin-bottom: 1rem;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
-      transition: border-color 0.3s ease;
+      @include transition(border-color);
 
       &:focus {
         border-color: $primary-color;
@@ -54,7 +55,7 @@ $background-color: #f4f4f4;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    @include transition(background);
 
     &:hover:enabled {
       background: darken($primary-color, 10%);
@@ -66,7 +67,6 @@ $background-color: #f4f4f4;
     }
   }
 
-  // Feedback poruke
   .feedback {
     margin-top: 1rem;
     font-weight: bold;
@@ -80,7 +80,6 @@ $background-color: #f4f4f4;
     }
   }
 
-  // Lista grešaka
   .error-list {
     margin-top: 1rem;
     color: $error-color;
@@ -94,7 +93,7 @@ $background-color: #f4f4f4;
   }
 }
 
-// Spinner za loading
+// Spinner Styles
 .spinner {
   border: 6px solid #f3f3f3;
   border-top: 6px solid $primary-color;
@@ -106,6 +105,10 @@ $background-color: #f4f4f4;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

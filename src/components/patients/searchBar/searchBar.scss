@@ -3,12 +3,11 @@
 .search-bar-wrapper {
   margin-bottom: 1rem;
 
-
   .search-bar-header {
     display: flex;
     align-items: center;
     gap: 1rem;
- 
+
     .toggle-search-button {
       background: $primary-color;
       color: #fff;

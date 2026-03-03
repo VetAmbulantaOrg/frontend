@@ -2,30 +2,42 @@ import React from 'react';
 import Modal from 'react-modal';
 import './styles/modal.scss';
 
-Modal.setAppElement('#root'); // obavezno da bi se izbegle accessibility greške
+Modal.setAppElement('#root'); // Required to avoid accessibility issues
 
-export default function AppointmentModal({ isOpen, onClose, appointments }) {
+const modalStyles = {
+  content: {
+    width: '500px',
+    margin: 'auto',
+    borderRadius: '8px',
+  },
+};
+
+export default function AppointmentModal({ isOpen, onClose, appointments = [] }) {
+  const renderAppointments = () => {
+    if (appointments.length === 0) {
+      return <p>Nema pregleda.</p>;
+    }
+
+    return (
+      <ul>
+        {appointments.map(({ id, start, patient }) => (
+          <li key={id}>
+            {start.toLocaleTimeString()} – {patient.name} ({patient.species}, {patient.age} god.)
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onClose}
       contentLabel="Pregledi za dan"
-      style={{
-        content: { width: '500px', margin: 'auto', borderRadius: '8px' }
-      }}
+      style={modalStyles}
     >
       <h2>Pregledi za dan</h2>
-      {appointments.length === 0 ? (
-        <p>Nema pregleda.</p>
-      ) : (
-        <ul>
-          {appointments.map(app => (
-           <li key={app.id}> 
-                {app.start.toLocaleTimeString()} – {app.patient.name} ({app.patient.species}, {app.patient.age} god.) 
-           </li>
-          ))}
-        </ul>
-      )}
+      {renderAppointments()}
       <button onClick={onClose}>Zatvori</button>
     </Modal>
   );

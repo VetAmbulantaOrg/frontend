@@ -11,8 +11,6 @@ const Header = () => {
       <h1>Veterinarska Ambulanta Inđija</h1>
       <nav>
         <ul className="nav-list">
-          <li><Link to="/">Početna</Link></li>
-
           {(isVet || isHelp) && (
             <>
               <li><Link to="/patients">Pacijenti</Link></li>
