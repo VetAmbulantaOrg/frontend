@@ -44,20 +44,11 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Navigacija na osnovu role – reaguje kad se role promeni
-  useEffect(() => {
-    if (isAuthenticated && role) {
-      if (role === "Veterinar") {
-        navigate("/appointments");
-      } else if (role === "Pomocnik") {
-        navigate("/patients");
-      }
-    }
-  }, [isAuthenticated, role, navigate]);
 
   const login = (token) => {
     sessionStorage.setItem("token", token);
     decodeAndSetUser(token);
+    navigate("/patients");
   };
 
   const logout = () => {
