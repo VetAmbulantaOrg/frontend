@@ -48,7 +48,6 @@ export const AuthProvider = ({ children }) => {
   const login = (token) => {
     sessionStorage.setItem("token", token);
     decodeAndSetUser(token);
-    navigate("/patients");
   };
 
   const logout = () => {
