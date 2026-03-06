@@ -39,7 +39,7 @@ const LoginForm = () => {
       sessionStorage.setItem("token", myToken);
       login(myToken);
       alert(`Dobrodošao, ${username}!`);
-      navigate("/home");
+      navigate("/patients");
     } catch (error) {
       alert("Neispravno korisničko ime ili lozinka.");
       console.error("Login error:", error);
@@ -75,17 +75,6 @@ const LoginForm = () => {
           {loading ? "Prijavljivanje..." : "Prijavi se"}
         </button>
       </section>
-
-      <div
-        id="form-feedback"
-        style={{
-          marginTop: "1rem",
-          fontWeight: "bold",
-          color: isValid ? "green" : "red",
-        }}
-      >
-        {feedback}
-      </div>
     </form>
   );
 };

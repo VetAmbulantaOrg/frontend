@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
 import "./login_register.scss";
-import * as authService from "../../services/auth.services.jsx";
+import * as userService from "../../services/user.services.jsx";
 import { useNavigate } from "react-router-dom";
+import ConfirmPetModal from "./modals/ConfirmPetModal.jsx";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    email: "",
-    firstName: "",
-    lastName: "",
+    name: "",
+    surname: "",
+    adress: "",
+    phoneNumber: "",
   });
 
-  const [feedback, setFeedback] = useState("");
   const [isValid, setIsValid] = useState(false);
-  const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,41 +24,31 @@ const RegisterForm = () => {
   };
 
   useEffect(() => {
-    const { username, password, confirmPassword, email, firstName, lastName } = formData;
+    const { name, surname, adress, phoneNumber } = formData;
     const valid =
-      username.trim().length > 2 &&
-      password.length >= 8 &&
-      password === confirmPassword &&
-      email.trim().length > 5 &&
-      firstName.trim().length > 1 &&
-      lastName.trim().length > 1;
+      name.trim().length > 1 &&
+      surname.trim().length > 1 &&
+      adress.trim().length > 5 &&
+      phoneNumber.trim().length >= 6;
 
     setIsValid(valid);
-    setFeedback(
-      valid
-        ? "Podaci su validni. Možete nastaviti."
-        : "Molimo vas da ispravno popunite sva polja."
-    );
   }, [formData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors([]);
     setLoading(true);
 
-    const { username, password, email, firstName, lastName } = formData;
+    const { name, surname, adress, phoneNumber } = formData;
     const payload = {
-      userName: username,
-      password,
-      email,
-      name: firstName,
-      surname: lastName,
+      name,
+      surname,
+      adress,
+      phoneNumber: phoneNumber,
     };
 
     try {
-      await authService.createUser(payload);
-      alert("Registracija uspešna! Možete se prijaviti.");
-      navigate("/login");
+      await userService.createOwner(payload);
+      setShowModal(true);
     } catch (error) {
       const backendErrors = error?.response?.data;
       const messages = Array.isArray(backendErrors)
@@ -68,7 +56,6 @@ const RegisterForm = () => {
             (err) => err.description || err.message || "Greška u registraciji."
           )
         : [error.message || "Došlo je do greške."];
-      setErrors(messages);
       console.error("Register error:", error);
     } finally {
       setLoading(false);
@@ -89,48 +76,31 @@ const RegisterForm = () => {
   if (loading) return <div id="loadingSpinner" className="spinner"></div>;
 
   return (
-    <form className="forma" onSubmit={handleSubmit}>
-      <section className="form-section">
-        <h2>👤 Lični podaci</h2>
-        {renderInput("text", "username", "Korisničko ime")}
-        {renderInput("email", "email", "Email adresa")}
-        {renderInput("text", "firstName", "Ime")}
-        {renderInput("text", "lastName", "Prezime")}
-      </section>
+    <>
+      <form className="forma" onSubmit={handleSubmit}>
+        <section className="form-section">
+          <h2>👤 Podaci o vlasniku</h2>
+          {renderInput("text", "name", "Ime")}
+          {renderInput("text", "surname", "Prezime")}
+          {renderInput("text", "adress", "Adresa")}
+          {renderInput("text", "phoneNumber", "Broj Telefona")}
+        </section>
 
-      <section className="form-section">
-        <h2>🔒 Bezbednost</h2>
-        {renderInput("password", "password", "Lozinka")}
-        {renderInput("password", "confirmPassword", "Potvrdi lozinku")}
-      </section>
+        <section className="form-section">
+          <button type="submit" disabled={!isValid}>
+            Registruj vlasnika
+          </button>
+        </section>
+      </form>
 
-      <section className="form-section">
-        <button type="submit" disabled={!isValid}>
-          Registruj se
-        </button>
-      </section>
-
-      <div
-        style={{
-          marginTop: "1rem",
-          fontWeight: "bold",
-          color: isValid ? "green" : "red",
-        }}
-      >
-        {feedback}
-      </div>
-
-      {errors.length > 0 && (
-        <div style={{ marginTop: "1rem", color: "red", fontWeight: "bold" }}>
-          <h4>Greške:</h4>
-          <ul>
-            {errors.map((err, index) => (
-              <li key={index}>{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </form>
+      <ConfirmPetModal
+        isOpen={showModal}
+        onClose={() => navigate("/patients")}
+        onConfirm={() =>
+          navigate("/create-patient", { state: { ownerUsername: formData.name + " " + formData.surname } })
+        }
+      />
+    </>
   );
 };
 
