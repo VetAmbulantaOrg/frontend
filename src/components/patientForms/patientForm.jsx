@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import AsyncSelect from "react-select/async";
 import "../Login_Register/login_register.scss";
@@ -11,9 +11,16 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
     formState: { errors },
     reset,
     control,
-  } = useForm();
-
-  const [selectedOwner, setSelectedOwner] = useState(null);
+  } = useForm({
+    defaultValues: {
+      owner: initialData?.owner
+        ? {
+            value: initialData.owner.id,
+            label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
+          }
+        : null,
+    },
+  });
 
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
@@ -28,17 +35,15 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
           : user?.role === "Veterinar"
           ? Number(user.Id)
           : null,
+        owner: initialData.owner
+          ? {
+              value: initialData.owner.id,
+              label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
+            }
+          : null,
       });
-
-      if (initialData.owner) {
-        setSelectedOwner({
-          value: initialData.owner.id,
-          label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
-        });
-      }
     } else {
       reset();
-      setSelectedOwner(null);
     }
   }, [initialData, reset, user]);
 
@@ -70,7 +75,6 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
     console.log("Podaci iz forme:", patient);
     onSubmit(patient);
     reset();
-    setSelectedOwner(null);
   };
 
   const renderInputField = (label, name, type, validation, additionalProps = {}) => (
@@ -127,11 +131,8 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
                 cacheOptions
                 loadOptions={loadOwners}
                 defaultOptions
-                value={selectedOwner}
-                onChange={(val) => {
-                  setSelectedOwner(val);
-                  field.onChange(val);
-                }}
+                value={field.value}
+                onChange={field.onChange}
                 placeholder="Pretraži vlasnike..."
                 isSearchable
               />
