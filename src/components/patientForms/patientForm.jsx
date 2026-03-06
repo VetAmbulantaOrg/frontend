@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import AsyncSelect from "react-select/async"; // važno: koristi AsyncSelect
+import React, { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import AsyncSelect from "react-select/async";
 import "../Login_Register/login_register.scss";
 import * as userService from "../../services/user.services.jsx";
 
@@ -10,9 +10,17 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
-
-  const [selectedOwner, setSelectedOwner] = useState(null);
+    control,
+  } = useForm({
+    defaultValues: {
+      owner: initialData?.owner
+        ? {
+            value: initialData.owner.id,
+            label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
+          }
+        : null,
+    },
+  });
 
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
@@ -27,14 +35,15 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
           : user?.role === "Veterinar"
           ? Number(user.Id)
           : null,
+        owner: initialData.owner
+          ? {
+              value: initialData.owner.id,
+              label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
+            }
+          : null,
       });
-
-      if (initialData.owner) {
-        setSelectedOwner({
-          value: initialData.owner.id,
-          label: `${initialData.owner.name} ${initialData.owner.surname} (${initialData.owner.adress})`,
-        });
-      }
+    } else {
+      reset();
     }
   }, [initialData, reset, user]);
 
@@ -60,7 +69,7 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
       speciesId: data.species ? Number(data.species) : null,
       vetId: data.vet ? Number(data.vet) : null,
       dateOfBirth: data.dateOfBirth,
-      ownerId: selectedOwner ? selectedOwner.value : null,
+      ownerId: data.owner ? data.owner.value : null,
     };
 
     console.log("Podaci iz forme:", patient);
@@ -113,15 +122,23 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
       <div className="form-section">
         <label>
           Vlasnik:
-          <AsyncSelect
-            cacheOptions
-            loadOptions={loadOwners}
-            defaultOptions
-            value={selectedOwner}
-            onChange={setSelectedOwner}
-            placeholder="Pretraži vlasnike..."
-            isSearchable
+          <Controller
+            name="owner"
+            control={control}
+            rules={{ required: "Vlasnik je obavezan!" }}
+            render={({ field }) => (
+              <AsyncSelect
+                cacheOptions
+                loadOptions={loadOwners}
+                defaultOptions
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pretraži vlasnike..."
+                isSearchable
+              />
+            )}
           />
+          {errors.owner && <p className="error">{errors.owner.message}</p>}
         </label>
       </div>
 

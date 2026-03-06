@@ -17,6 +17,7 @@ const RegisterForm = () => {
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [errors, setErrors] = useState([]); // <<< dodato za prikaz grešaka
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,14 +38,10 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrors([]); // očisti stare greške
 
     const { name, surname, adress, phoneNumber } = formData;
-    const payload = {
-      name,
-      surname,
-      adress,
-      phoneNumber: phoneNumber,
-    };
+    const payload = { name, surname, adress, phoneNumber };
 
     try {
       await userService.createOwner(payload);
@@ -56,7 +53,9 @@ const RegisterForm = () => {
             (err) => err.description || err.message || "Greška u registraciji."
           )
         : [error.message || "Došlo je do greške."];
+
       console.error("Register error:", error);
+      setErrors(messages); // <<< prikaži poruke korisniku
     } finally {
       setLoading(false);
     }
@@ -80,6 +79,16 @@ const RegisterForm = () => {
       <form className="forma" onSubmit={handleSubmit}>
         <section className="form-section">
           <h2>👤 Podaci o vlasniku</h2>
+
+          {/* prikaz grešaka */}
+          {errors.length > 0 && (
+            <ul className="error-list">
+              {errors.map((msg, idx) => (
+                <li key={idx} className="error">{msg}</li>
+              ))}
+            </ul>
+          )}
+
           {renderInput("text", "name", "Ime")}
           {renderInput("text", "surname", "Prezime")}
           {renderInput("text", "adress", "Adresa")}
@@ -97,7 +106,9 @@ const RegisterForm = () => {
         isOpen={showModal}
         onClose={() => navigate("/patients")}
         onConfirm={() =>
-          navigate("/create-patient", { state: { ownerUsername: formData.name + " " + formData.surname } })
+          navigate("/create-patient", {
+            state: { ownerUsername: formData.name + " " + formData.surname },
+          })
         }
       />
     </>
