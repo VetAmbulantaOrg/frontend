@@ -6,7 +6,7 @@ export async function getAllVets() {
 }
 
 export async function createOwner(ownerData) {
-  const response = await AxiosConfig.post('/User/Owner' , ownerData);
+  const response = await AxiosConfig.post('/User/owner' , ownerData);
   return response.data;
 }
 
