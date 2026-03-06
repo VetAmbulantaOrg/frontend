@@ -1,6 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Home from "./components/Home.jsx";
 import PatientsTable from "./components/patients/patientsRender.jsx";
 import PatientCreate from "./components/patientForms/patientFromCreate.jsx";
 import PatientEdit from "./components/patientForms/patientFromEdit.jsx";
@@ -13,7 +12,6 @@ import ProtectedRoute from "./security/ProtectedRoute.jsx";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/home" element={<Home />} />
 
       <Route
         path="/patients"
@@ -51,8 +49,9 @@ const AppRoutes = () => {
         }
       />
 
+      <Route path="/" element={<LoginPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/register-owner" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
     </Routes>
   );

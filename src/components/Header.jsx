@@ -20,7 +20,6 @@ const Header = () => {
           
           {!isAuthenticated ? (
             <>
-              <li><Link to="/register">Register</Link></li>
               <li><Link to="/login">Login</Link></li>
             </>
           ) : (

@@ -13,10 +13,17 @@ export default function PatientsTable({ patients, page, pageSize, totalCount, on
   return (
     <div className="patients-wrapper">
       <button
-        className="add-patient-button"
+        className="add-button"
         onClick={() => navigate("/create-patient")}
       >
         Dodaj novog pacijenta
+      </button>
+      
+      <button
+        className="add-button"
+        onClick={() => navigate("/register-owner")}
+      >
+        Dodaj novog vlasnika
       </button>
 
       <table className="patients-table">

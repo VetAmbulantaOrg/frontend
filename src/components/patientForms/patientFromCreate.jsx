@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function CreateAnimalPage() {
   const navigate = useNavigate();
+
   const [speciesData, setSpeciesData] = useState([]);
   const [error, setError] = useState(null);
 
@@ -42,10 +43,7 @@ export default function CreateAnimalPage() {
       {error && <p className="error">{error}</p>}
       <ContactHookForm
         species={speciesData}
-        onSubmit={(patient) => {
-          console.log("Šaljem ka serveru:", patient);
-          handleCreate(patient);
-        }}
+        onSubmit={handleCreate}
         onCancel={() => navigate("/patients")}
       />
     </div>

@@ -57,6 +57,7 @@ export const AuthProvider = ({ children }) => {
     setIsHelp(false);
     setUser(null);
     setRole(null);
+    navigate("/login");
   };
 
   return (
