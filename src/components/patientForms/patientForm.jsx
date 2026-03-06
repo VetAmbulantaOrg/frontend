@@ -13,6 +13,16 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
     control,
   } = useForm({
     defaultValues: {
+      name: initialData?.name || "",
+      dateOfBirth: initialData?.dateOfBirth
+        ? new Date(initialData.dateOfBirth).toISOString().split("T")[0]
+        : "",
+      species: initialData?.species?.id || "",
+      vet: initialData?.vet?.id
+        ? Number(initialData.vet.id)
+        : user?.role === "Veterinar"
+        ? Number(user.Id)
+        : null,
       owner: initialData?.owner
         ? {
             value: initialData.owner.id,
@@ -42,12 +52,10 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
             }
           : null,
       });
-    } else {
-      reset();
     }
-  }, [initialData, reset, user]);
+    // nema reset() u else grani → nema beskonačne petlje
+  }, [initialData, user]);
 
-  // asinhrona pretraga vlasnika
   const loadOwners = async (inputValue) => {
     if (!inputValue || inputValue.length < 2) return [];
     try {
@@ -74,7 +82,7 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
 
     console.log("Podaci iz forme:", patient);
     onSubmit(patient);
-    reset();
+    reset(); // reset nakon submit-a
   };
 
   const renderInputField = (label, name, type, validation, additionalProps = {}) => (
@@ -118,7 +126,6 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
 
       {renderSelectField("Vrsta pacijenta:", "species", species)}
 
-      {/* Pretraga vlasnika */}
       <div className="form-section">
         <label>
           Vlasnik:
