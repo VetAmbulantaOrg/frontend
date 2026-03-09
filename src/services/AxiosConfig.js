@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 let AxiosConfig = axios.create({
-  baseURL: 'http://localhost:5231/api',
+  baseURL: 'https://veterina.usagi-it.com/api',
 });
 
 AxiosConfig.interceptors.request.use((config) => {
