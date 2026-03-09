@@ -65,6 +65,15 @@
       background: #ccc;
       cursor: not-allowed;
     }
+
+    &.demo-btn {
+      background: #ff9800;
+      margin-bottom: 0;
+
+      &:hover:enabled {
+        background: darken(#ff9800, 10%);
+      }
+    }
   }
 
   .feedback {

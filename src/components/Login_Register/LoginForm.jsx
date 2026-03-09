@@ -3,6 +3,7 @@ import "./login_register.scss";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
 import * as authService from "../../services/auth.services.jsx";
+import DemoCredentialsModal from "./modals/DemoCredentialsModal";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const LoginForm = () => {
   const [feedback, setFeedback] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDemoModal, setShowDemoModal] = useState(false);
 
   const { username, password } = formData;
 
@@ -49,33 +51,47 @@ const LoginForm = () => {
   };
 
   return (
-    <form className="forma" onSubmit={handleSubmit}>
-      <section className="form-section">
-        <h2>🔐 Prijava</h2>
-        <input
-          type="text"
-          name="username"
-          placeholder="Korisničko ime"
-          value={username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Lozinka"
-          value={password}
-          onChange={handleChange}
-          required
-        />
-      </section>
+    <>
+      <form className="forma" onSubmit={handleSubmit}>
+        <section className="form-section">
+          <h2>🔐 Prijava</h2>
+          <input
+            type="text"
+            name="username"
+            placeholder="Korisničko ime"
+            value={username}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Lozinka"
+            value={password}
+            onChange={handleChange}
+            required
+          />
+        </section>
 
-      <section className="form-section">
-        <button type="submit" disabled={!isValid || loading}>
-          {loading ? "Prijavljivanje..." : "Prijavi se"}
-        </button>
-      </section>
-    </form>
+        <section className="form-section">
+          <button type="submit" disabled={!isValid || loading}>
+            {loading ? "Prijavljivanje..." : "Prijavi se"}
+          </button>
+          <button 
+            type="button" 
+            className="demo-btn"
+            onClick={() => setShowDemoModal(true)}
+          >
+            🔑 Demo Credentials
+          </button>
+        </section>
+      </form>
+
+      <DemoCredentialsModal 
+        isOpen={showDemoModal} 
+        onClose={() => setShowDemoModal(false)} 
+      />
+    </>
   );
 };
 
