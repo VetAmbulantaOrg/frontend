@@ -186,7 +186,10 @@ export default function AppointmentsPage() {
             isOpen={modals.detail}
             onClose={() => toggleModal('detail', false)}
             appointment={selectedAppointment}
-            cancelAppointment={() => toggleModal('cancel', true)}
+            cancelAppointment={() => {
+              toggleModal('detail', false);   // zatvori detail
+              toggleModal('cancel', true);    // otvori cancel
+            }}
             isVet={isVet}
           />
 
