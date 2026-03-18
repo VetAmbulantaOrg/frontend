@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import "./demo_credentials_modal.scss";
 
 const DemoCredentialsModal = ({ isOpen, onClose }) => {
-  const demoCredentials = {
-    username: "john",
-    password: "John123!",
-  };
+  const demoAccounts = [
+    { label: "Veterinarian", username: "john", password: "John123!" },
+    { label: "Veterinarian", username: "jane", password: "Jane123!" },
+    { label: "Helper", username: "marko", password: "Marko123!" },
+  ];
 
   const [copied, setCopied] = useState(null);
 
-  const handleCopy = (text, field) => {
+  const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
-    setCopied(field);
+    setCopied(key);
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -28,44 +29,42 @@ const DemoCredentialsModal = ({ isOpen, onClose }) => {
         <div className="modal-body">
           <p className="info-text">Use these credentials to test the application:</p>
 
-          <div className="credential-item">
-            <label>Username:</label>
-            <div className="credential-field">
-              <input 
-                type="text" 
-                value={demoCredentials.username} 
-                readOnly 
-              />
-              <button
-                type="button"
-                className={`copy-btn ${copied === 'username' ? 'copied' : ''}`}
-                onClick={() => handleCopy(demoCredentials.username, 'username')}
-              >
-                {copied === 'username' ? '✓ Copied' : 'Copy'}
-              </button>
-            </div>
-          </div>
+          {demoAccounts.map((account) => (
+            <div key={account.label} className="account-block">
+              <h3 className="account-label">{account.label}</h3>
 
-          <div className="credential-item">
-            <label>Password:</label>
-            <div className="credential-field">
-              <input 
-                type="text" 
-                value={demoCredentials.password} 
-                readOnly 
-              />
-              <button
-                type="button"
-                className={`copy-btn ${copied === 'password' ? 'copied' : ''}`}
-                onClick={() => handleCopy(demoCredentials.password, 'password')}
-              >
-                {copied === 'password' ? '✓ Copied' : 'Copy'}
-              </button>
+              <div className="credential-item">
+                <label>Username:</label>
+                <div className="credential-field">
+                  <input type="text" value={account.username} readOnly />
+                  <button
+                    type="button"
+                    className={`copy-btn ${copied === `${account.label}-username` ? 'copied' : ''}`}
+                    onClick={() => handleCopy(account.username, `${account.label}-username`)}
+                  >
+                    {copied === `${account.label}-username` ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="credential-item">
+                <label>Password:</label>
+                <div className="credential-field">
+                  <input type="text" value={account.password} readOnly />
+                  <button
+                    type="button"
+                    className={`copy-btn ${copied === `${account.label}-password` ? 'copied' : ''}`}
+                    onClick={() => handleCopy(account.password, `${account.label}-password`)}
+                  >
+                    {copied === `${account.label}-password` ? '✓ Copied' : 'Copy'}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
+          ))}
 
           <div className="info-box">
-            <p>✨ This is a demo account for testing the application features.</p>
+            <p>✨ These are demo accounts for testing the application features.</p>
           </div>
         </div>
 

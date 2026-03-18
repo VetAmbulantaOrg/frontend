@@ -95,11 +95,11 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
     </div>
   );
 
-  const renderSelectField = (label, name, options, additionalProps = {}) => (
+  const renderSelectField = (label, name, options, validation = {}, additionalProps = {}) => (
     <div className="form-section">
       <label>
         {label}
-        <select {...register(name)} {...additionalProps}>
+        <select {...register(name, validation)} {...additionalProps}>
           <option value="">-- Bez opcije --</option>
           {options.map((option) => (
             <option key={option.id} value={option.id}>
@@ -107,6 +107,7 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
             </option>
           ))}
         </select>
+        {errors[name] && <p className="error">{errors[name].message}</p>}
       </label>
     </div>
   );
@@ -124,7 +125,7 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
         setValueAs: (value) => (value ? new Date(value).toISOString() : null),
       })}
 
-      {renderSelectField("Vrsta pacijenta:", "species", species)}
+      {renderSelectField("Vrsta pacijenta:", "species", species, {})}
 
       <div className="form-section">
         <label>
@@ -149,8 +150,13 @@ function ContactHookForm({ user, vets = [], species = [], initialData = {}, onSu
         </label>
       </div>
 
-      {initialData.id &&
-        renderSelectField("Izaberite vašeg veterinara:", "vet", vets)}
+      {renderSelectField(
+        "Veterinar:",
+        "vet",
+        vets,
+        { required: "Obavezno je izabrati veterinara!" },
+        { disabled: user?.role === "Veterinar" }
+      )}
 
       <button type="submit">
         {initialData?.id ? "Sačuvaj izmene" : "Dodaj pacijenta"}

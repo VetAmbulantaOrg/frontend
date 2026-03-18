@@ -3,7 +3,7 @@ import * as speciesService from "../../../services/species.services.jsx";
 import * as patientService from "../../../services/patients.services.jsx";
 import "./searchBar.scss";
 
-export default function SearchBar({ onSearch, triggerRefresh }) {
+export default function SearchBar({ onSearch, triggerRefresh, vetId = null }) {
     const [filters, setFilters] = useState({
         fullNameVet: "",
         petName: "",
@@ -36,6 +36,7 @@ export default function SearchBar({ onSearch, triggerRefresh }) {
             MinAge: filters.minAge ? parseInt(filters.minAge) : null,
             MaxAge: filters.maxAge ? parseInt(filters.maxAge) : null,
             SortType: filters.sortType || "NameAsc",
+            ...(vetId && { VetId: vetId }),
         };
 
         try {
@@ -76,7 +77,7 @@ export default function SearchBar({ onSearch, triggerRefresh }) {
                     <fieldset>
                         <legend>Filteri</legend>
                         <div className="form-grid">
-                            {renderInput("Veterinar (ime i prezime):", "fullNameVet", filters.fullNameVet, handleInputChange)}
+                            {!vetId && renderInput("Veterinar (ime i prezime):", "fullNameVet", filters.fullNameVet, handleInputChange)}
                             {renderInput("Ime pacijenta:", "petName", filters.petName, handleInputChange)}
                             {renderSelect("Vrsta:", "species", filters.species, speciesList, handleInputChange)}
                             {renderInput("Minimalne godine:", "minAge", filters.minAge, handleInputChange, "number")}
