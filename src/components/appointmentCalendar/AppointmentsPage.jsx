@@ -28,8 +28,8 @@ export default function AppointmentsPage() {
   const [vetId, setVetId] = useState(null);
 
   useEffect(() => {
-    if (role === 'Veterinar' && user?.id) {
-      setVetId(user.id);
+    if (role === 'Veterinar' && user?.Id) {
+      setVetId(user.Id);
     } else {
       fetchVets();
     }
